@@ -1,7 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
-const Booking = require('../models/Booking');
-const { sendBookingConfirmations, whatsappLink, instagramLink } = require('../services/notify');
+const Booking = require('./Booking');
+const { sendBookingConfirmations, whatsappLink, instagramLink } = require('./notify');
 
 const router = express.Router();
 

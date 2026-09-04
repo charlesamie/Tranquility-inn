@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tranquility Inn — Admin</title>
+<link rel="icon" href="logo-main.webp"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{--paper:#F7F5F0;--ink:#141F1A;--ink-soft:rgba(20,31,26,.6);--line:rgba(20,31,26,.14);--clay:#9C6B3E;--clay-soft:#C99A6B;--paper2:#FBFAF7;--good:#3F7A4C;--bad:#B33F3F;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);}
+  h1,h2,.serif{font-family:'Fraunces',serif;font-weight:400;}
+  .hidden{display:none !important;}
+
+  /* LOGIN */
+  #login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+  .login-box{width:100%;max-width:380px;border:1px solid var(--line);background:var(--paper2);padding:2.4rem;}
+  .login-mark{height:72px;width:auto;display:block;margin-bottom:1.4rem;}
+  .login-box h1{font-size:1.5rem;margin-bottom:.3rem;}
+  .login-box p{font-size:.85rem;color:var(--ink-soft);margin-bottom:1.6rem;}
+  .fgroup{margin-bottom:1.1rem;}
+  .fgroup label{display:block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem;font-weight:500;}
+  .fgroup input,.fgroup select{width:100%;padding:.7rem .8rem;border:1px solid var(--line);background:var(--paper);font-size:.88rem;outline:none;}
+  .fgroup input:focus{border-color:var(--ink);}
+  .btn{background:var(--ink);color:var(--paper);border:none;padding:.8rem 1.4rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500;cursor:pointer;width:100%;}
+  .btn:hover{background:var(--clay);}
+  .btn-sm{padding:.4rem .8rem;font-size:.68rem;width:auto;}
+  #login-error{color:var(--bad);font-size:.8rem;margin-top:1rem;min-height:1rem;}
+
+  /* DASHBOARD */
+  #dash-view{max-width:1180px;margin:0 auto;padding:1.5rem 5vw 4rem;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:1rem 0 2rem;border-bottom:1px solid var(--line);margin-bottom:2rem;}
+  .topbar-brand{display:flex;align-items:center;gap:.7rem;}
+  .topbar-mark{height:56px;width:auto;display:block;}
+  .topbar .logo{font-size:1.2rem;}
+  .topbar .logo em{color:var(--clay);font-style:italic;}
+  #logout-btn{background:none;border:1px solid var(--line);color:var(--ink);padding:.5rem 1rem;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:2.5rem;}
+  .stat-card{background:var(--paper2);padding:1.4rem 1.6rem;}
+  .stat-card .lbl{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.5rem;}
+  .stat-card .val{font-family:'Fraunces',serif;font-size:1.8rem;}
+
+  .tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;border-bottom:1px solid var(--line);}
+  .tab-btn{background:none;border:none;padding:.8rem 1.2rem;font-size:.8rem;letter-spacing:.03em;cursor:pointer;color:var(--ink-soft);border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab-btn.active{color:var(--ink);border-bottom-color:var(--clay);font-weight:500;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem;}
+  th{text-align:left;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);padding:.7rem .8rem;border-bottom:1px solid var(--line);}
+  td{padding:.8rem;border-bottom:1px solid var(--line);vertical-align:top;}
+  tr:hover td{background:rgba(20,31,26,.02);}
+  .badge{display:inline-block;padding:.2rem .55rem;font-size:.68rem;letter-spacing:.03em;text-transform:uppercase;border:1px solid var(--line);}
+  .badge.paid{color:var(--good);border-color:var(--good);}
+  .badge.pending{color:var(--clay);border-color:var(--clay);}
+  .badge.failed,.badge.rejected,.badge.cancelled{color:var(--bad);border-color:var(--bad);}
+  .badge.approved{color:var(--good);border-color:var(--good);}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);background:var(--paper2);margin-bottom:2.5rem;}
+  .section-title{font-size:1.2rem;margin-bottom:1rem;}
+  .empty-note{padding:2rem;text-align:center;color:var(--ink-soft);font-size:.85rem;}
+  .row-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
+  .row-actions button{background:none;border:1px solid var(--line);padding:.3rem .6rem;font-size:.68rem;text-transform:uppercase;cursor:pointer;}
+  .row-actions button:hover{border-color:var(--ink);}
+
+  .promo-form{display:grid;grid-template-columns:repeat(5,1fr) auto;gap:.6rem;align-items:end;margin-bottom:1.5rem;background:var(--paper2);border:1px solid var(--line);padding:1.2rem;}
+  .promo-form .fgroup{margin-bottom:0;}
+  #toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:var(--paper);padding:.9rem 1.3rem;font-size:.82rem;display:none;max-width:320px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-view">
+  <div class="login-box">
+    <img class="login-mark" src="logo-main.webp" alt="Tranquility Inn"/>
+    <h1>Admin sign in</h1>
+    <p>Tranquility Inn — booking & revenue dashboard</p>
+    <div class="fgroup"><label>Email</label><input type="email" id="login-email" placeholder="admin@tranquilityinn-chennai.com"/></div>
+    <div class="fgroup"><label>Password</label><input type="password" id="login-password"/></div>
+    <div class="fgroup">
+      <label>Security code</label>
+      <div style="display:flex;gap:.6rem;align-items:center;">
+        <div id="captcha-img" style="border:1px solid var(--line);background:#fff;line-height:0;"></div>
+        <button type="button" id="captcha-refresh" class="btn-sm" style="width:auto;background:none;color:var(--ink);border:1px solid var(--line);">↻</button>
+      </div>
+      <input type="text" id="captcha-input" placeholder="Enter the code above" style="margin-top:.6rem;"/>
+    </div>
+    <button class="btn" id="login-btn">Sign in</button>
+    <p id="login-error"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash-view" class="hidden">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img class="topbar-mark" src="logo-main.webp" alt="Tranquility Inn"/>
+      <div class="logo serif">Tranquility <em>Inn</em> — Admin</div>
+    </div>
+    <button id="logout-btn">Sign out</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="lbl">Total revenue</div><div class="val" id="stat-revenue">₹0</div></div>
+    <div class="stat-card"><div class="lbl">Paid bookings</div><div class="val" id="stat-bookings">0</div></div>
+    <div class="stat-card"><div class="lbl">Room units</div><div class="val" id="stat-rooms">0</div></div>
+    <div class="stat-card"><div class="lbl">Pending reviews</div><div class="val" id="stat-reviews">0</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="bookings">Bookings</button>
+    <button class="tab-btn" data-tab="occupancy">Occupancy</button>
+    <button class="tab-btn" data-tab="reviews">Reviews</button>
+    <button class="tab-btn" data-tab="promos">Promo codes</button>
+  </div>
+
+  <div id="tab-bookings" class="tab-panel active">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ref</th><th>Guest</th><th>Room</th><th>Dates</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr></thead>
+        <tbody id="bookings-body"></tbody>
+      </table>
+      <div id="bookings-empty" class="empty-note hidden">No bookings yet.</div>
+    </div>
+  </div>
+
+  <div id="tab-occupancy" class="tab-panel">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Room type</th><th>Paid bookings</th><th>Revenue</th></tr></thead>
+        <tbody id="occupancy-body"></tbody>
+      </table>
+      <div id="occupancy-empty" class="empty-note hidden">No data yet.</div>
+    </div>
+  </div>
+
+  <div id="tab-reviews" class="tab-panel">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Guest</th><th>Rating</th><th>Review</th><th>Source</th><th>Status</th><th></th></tr></thead>
+        <tbody id="reviews-body"></tbody>
+      </table>
+      <div id="reviews-empty" class="empty-note hidden">No reviews yet.</div>
+    </div>
+  </div>
+
+  <div id="tab-promos" class="tab-panel">
+    <div class="promo-form">
+      <div class="fgroup"><label>Code</label><input id="promo-code" placeholder="SUMMER25"/></div>
+      <div class="fgroup"><label>Label</label><input id="promo-label" placeholder="Summer sale"/></div>
+      <div class="fgroup"><label>Discount %</label><input id="promo-pct" type="number" placeholder="10"/></div>
+      <div class="fgroup"><label>Min nights</label><input id="promo-nights" type="number" value="1"/></div>
+      <div class="fgroup"><label>Valid to</label><input id="promo-valid" type="date"/></div>
+      <button class="btn btn-sm" id="promo-add-btn">Add code</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Code</th><th>Label</th><th>Discount</th><th>Min nights</th><th>Valid to</th><th>Status</th><th></th></tr></thead>
+        <tbody id="promos-body"></tbody>
+      </table>
+      <div id="promos-empty" class="empty-note hidden">No promo codes yet.</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

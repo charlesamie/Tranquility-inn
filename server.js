@@ -8,16 +8,16 @@ const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
 
 const connectDB = require('./db');
-const Booking = require('./models/Booking');
+const Booking = require('./Booking');
 
-const authRoutes = require('./routes/auth');
-const roomRoutes = require('./routes/rooms');
-const availabilityRoutes = require('./routes/availability');
-const promoRoutes = require('./routes/promos');
-const reviewRoutes = require('./routes/reviews');
-const bookingRoutes = require('./routes/bookings');
-const paymentRoutes = require('./routes/payment');
-const webhookRoutes = require('./routes/webhook');
+const authRoutes = require('./auth');
+const roomRoutes = require('./rooms');
+const availabilityRoutes = require('./availability');
+const promoRoutes = require('./promos');
+const reviewRoutes = require('./reviews');
+const bookingRoutes = require('./bookings');
+const paymentRoutes = require('./payment');
+const webhookRoutes = require('./webhook');
 
 const app = express();
 
@@ -71,11 +71,17 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payment', paymentRoutes);
 
-// Serve the admin dashboard (static files) at /admin
-app.use('/admin', express.static(path.join(__dirname, 'admin')));
-
-// Serve the public guest-facing site at /
-app.use(express.static(path.join(__dirname, 'public')));
+// Everything lives flat next to server.js in this deploy (no /admin or /public
+// folders), so each public file is served through an explicit route instead of
+// express.static(__dirname) — that would also hand out server.js, the models,
+// and every route file as downloadable text, which we don't want.
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
+app.get('/sitemap.xml', (req, res) => res.sendFile(path.join(__dirname, 'sitemap.xml')));
+app.get('/app.js', (req, res) => res.sendFile(path.join(__dirname, 'app.js')));
+app.get('/logo-main.webp', (req, res) => res.sendFile(path.join(__dirname, 'logo-main.webp')));
+app.get('/logo-restobar.jpg', (req, res) => res.sendFile(path.join(__dirname, 'logo-restobar.jpg')));
 
 // 404 for unmatched API routes
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));

@@ -1,6 +1,6 @@
 const express = require('express');
-const Review = require('../models/Review');
-const { requireAdmin } = require('../middleware/auth');
+const Review = require('./Review');
+const { requireAdmin } = require('./requireAdmin');
 
 const router = express.Router();
 

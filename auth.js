@@ -2,8 +2,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
-const Admin = require('../models/Admin');
-const { generateCaptcha, verifyCaptcha } = require('../utils/captcha');
+const Admin = require('./Admin');
+const { generateCaptcha, verifyCaptcha } = require('./captcha');
 
 const router = express.Router();
 

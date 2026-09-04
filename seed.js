@@ -3,9 +3,9 @@
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const connectDB = require('./db');
-const Room = require('./models/Room');
-const Promo = require('./models/Promo');
-const Admin = require('./models/Admin');
+const Room = require('./Room');
+const Promo = require('./Promo');
+const Admin = require('./Admin');
 
 async function seed() {
   await connectDB();

@@ -2,10 +2,10 @@ const express = require('express');
 const crypto = require('crypto');
 const Razorpay = require('razorpay');
 const validator = require('validator');
-const Room = require('../models/Room');
-const Booking = require('../models/Booking');
-const Promo = require('../models/Promo');
-const { sendBookingConfirmations, whatsappLink, instagramLink } = require('../services/notify');
+const Room = require('./Room');
+const Booking = require('./Booking');
+const Promo = require('./Promo');
+const { sendBookingConfirmations, whatsappLink, instagramLink } = require('./notify');
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 const express = require('express');
-const Promo = require('../models/Promo');
-const { requireAdmin } = require('../middleware/auth');
+const Promo = require('./Promo');
+const { requireAdmin } = require('./requireAdmin');
 
 const router = express.Router();
 

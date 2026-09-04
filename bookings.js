@@ -1,7 +1,7 @@
 const express = require('express');
-const Booking = require('../models/Booking');
-const Room = require('../models/Room');
-const { requireAdmin } = require('../middleware/auth');
+const Booking = require('./Booking');
+const Room = require('./Room');
+const { requireAdmin } = require('./requireAdmin');
 
 const router = express.Router();
 
