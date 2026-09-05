@@ -30,7 +30,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'script-src': ["'self'", "'unsafe-inline'",'https://checkout.razorpay.com'],
+      'script-src': ["'self'", "'unsafe-inline'", 'https://checkout.razorpay.com'],
       'frame-src': ["'self'", 'https://api.razorpay.com', 'https://www.google.com'],
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com'],
@@ -84,6 +84,16 @@ app.get('/sitemap.xml', (req, res) => res.sendFile(path.join(__dirname, 'sitemap
 app.get('/app.js', (req, res) => res.sendFile(path.join(__dirname, 'app.js')));
 app.get('/logo-main.webp', (req, res) => res.sendFile(path.join(__dirname, 'logo-main.webp')));
 app.get('/logo-restobar.jpg', (req, res) => res.sendFile(path.join(__dirname, 'logo-restobar.jpg')));
+app.get('/standard-room.jpg', (req, res) => res.sendFile(path.join(__dirname, 'standard-room.jpg')));
+app.get('/family-room.jpg', (req, res) => res.sendFile(path.join(__dirname, 'family-room.jpg')));
+app.get('/premium-room.jpg', (req, res) => res.sendFile(path.join(__dirname, 'premium-room.jpg')));
+app.get('/penthouse-1.jpg', (req, res) => res.sendFile(path.join(__dirname, 'penthouse-1.jpg')));
+app.get('/penthouse-2.jpg', (req, res) => res.sendFile(path.join(__dirname, 'penthouse-2.jpg')));
+app.get('/penthouse-3.jpg', (req, res) => res.sendFile(path.join(__dirname, 'penthouse-3.jpg')));
+app.get('/gallery-lounge.jpg', (req, res) => res.sendFile(path.join(__dirname, 'gallery-lounge.jpg')));
+app.get('/gallery-bathroom.jpg', (req, res) => res.sendFile(path.join(__dirname, 'gallery-bathroom.jpg')));
+app.get('/lobby-1.jpg', (req, res) => res.sendFile(path.join(__dirname, 'lobby-1.jpg')));
+app.get('/lobby-2.jpg', (req, res) => res.sendFile(path.join(__dirname, 'lobby-2.jpg')));
 
 // 404 for unmatched API routes
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));

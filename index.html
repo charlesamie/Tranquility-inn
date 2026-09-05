@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Tranquility Inn — Rooms &amp; Stays in Manapakkam, Chennai</title>
-<meta name="description" content="Tranquility Inn is a small residential-quiet hotel in Manapakkam, South Chennai. Book Standard, Deluxe or Executive Suite rooms with a mini conference hall on site."/>
+<meta name="description" content="Tranquility Inn is a small residential-quiet hotel in Manapakkam, South Chennai. Book Standard, Family, Premium or Pent House rooms with a mini conference hall on site."/>
 <link rel="canonical" href="https://tranquility-inn.com/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="Tranquility Inn"/>
@@ -144,11 +144,12 @@
   .stat .lbl{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:.3rem;}
 
   /* ROOMS */
-  .rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(247,245,240,.14);border-left:1px solid rgba(247,245,240,.14);}
+  .rooms-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(247,245,240,.14);border-left:1px solid rgba(247,245,240,.14);}
   .room-card{border-right:1px solid rgba(247,245,240,.14);border-bottom:1px solid rgba(247,245,240,.14);cursor:pointer;transition:background .25s;}
   .room-card:hover{background:rgba(247,245,240,.04);}
   .room-img{width:100%;height:270px;object-fit:cover;filter:grayscale(.2) brightness(.85);transition:filter .35s,transform .5s;}
   .room-card:hover .room-img{filter:grayscale(0) brightness(.95);transform:scale(1.03);}
+  .room-tiers{font-size:.7rem;color:var(--ink-soft);margin:-.4rem 0 .7rem;letter-spacing:.01em;}
   .room-body{padding:1.6rem 1.7rem 1.9rem;}
   .room-name{font-family:'Fraunces',serif;font-size:1.3rem;margin-bottom:.2rem;}
   .room-size{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,245,240,.42);margin-bottom:1rem;}
@@ -309,6 +310,7 @@
   .foot-social a:hover{border-color:var(--clay-soft);background:rgba(201,154,107,.1);}
   .foot-social svg{width:16px;height:16px;fill:rgba(247,245,240,.75);}
 
+  @media(max-width:1180px){ .rooms-grid{grid-template-columns:repeat(2,1fr);} }
   @media(max-width:900px){
     .hero{grid-template-columns:1fr;gap:2rem;}
     .about{grid-template-columns:1fr;}
@@ -330,10 +332,10 @@
   "@context": "https://schema.org",
   "@type": "LodgingBusiness",
   "name": "Tranquility Inn",
-  "description": "A small residential retreat in South Chennai offering Standard, Deluxe and Executive Suite rooms plus a mini conference hall.",
+  "description": "A small residential retreat in South Chennai offering Standard, Family, Premium and Pent House rooms plus a mini conference hall.",
   "url": "https://tranquility-inn.com/",
   "telephone": "+91-98840-32292",
-  "priceRange": "₹2,880 - ₹4,800",
+  "priceRange": "₹2,880 - ₹10,000",
   "image": "https://ak-d.tripcdn.com/images/0220e12000gawggeb0627_R_960_660_R5_D.jpg",
   "address": {
     "@type": "PostalAddress",
@@ -409,8 +411,9 @@
       <select id="roomtype">
         <option value="">Any room</option>
         <option value="standard">Standard Room</option>
-        <option value="deluxe">Deluxe Room</option>
-        <option value="suite">Executive Suite</option>
+        <option value="family">Family Room</option>
+        <option value="premium">Premium Room</option>
+        <option value="penthouse">Pent House</option>
       </select>
     </div>
     <button class="book-btn" onclick="checkAvailability()">Check availability</button>
@@ -439,6 +442,10 @@
     <div class="gitem" onclick="openLightbox(3)"><img src="https://ak-d.tripcdn.com/images/0223f12000gawgczb9BEC_R_339_206_R5_D.jpg" alt="Lift lobby" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80'"/><div class="gcap">Lift lobby</div></div>
     <div class="gitem" onclick="openLightbox(4)"><img src="https://ak-d.tripcdn.com/images/0222s12000gawgknw7C21_R_339_206_R5_D.jpg" alt="Hotel overview" onerror="this.src='https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80'"/><div class="gcap">Hotel overview</div></div>
     <div class="gitem" onclick="openLightbox(5)"><img src="https://ak-d.tripcdn.com/images/0222712000gawg9ww037E_R_339_206_R5_D.jpg" alt="Exterior" onerror="this.src='https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?w=600&q=80'"/><div class="gcap">Exterior</div></div>
+    <div class="gitem" onclick="openLightbox(6)"><img src="gallery-lounge.jpg" alt="Lounge"/><div class="gcap">Lounge</div></div>
+    <div class="gitem" onclick="openLightbox(7)"><img src="gallery-bathroom.jpg" alt="Bathroom"/><div class="gcap">Bathroom</div></div>
+    <div class="gitem" onclick="openLightbox(8)"><img src="lobby-1.jpg" alt="Hotel lobby"/><div class="gcap">Hotel lobby</div></div>
+    <div class="gitem" onclick="openLightbox(9)"><img src="lobby-2.jpg" alt="Hotel lobby"/><div class="gcap">Hotel lobby</div></div>
   </div>
 </section>
 
@@ -476,11 +483,11 @@
       <div class="eyebrow">Accommodations</div>
       <h2 class="section-title">Choose your <em>room</em></h2>
     </div>
-    <p class="section-note">Rates shown per night, before tax. Select a room to jump to booking.</p>
+    <p class="section-note">Rates shown per night, with tax. Select a room to jump to booking.</p>
   </div>
   <div class="rooms-grid">
     <div class="room-card" data-slug="standard" onclick="selectRoomBySlug('standard')">
-      <img class="room-img" src="https://ak-d.tripcdn.com/images/0220w12000gawg8ob8E61_R_339_206_R5_D.jpg" alt="Standard Room" onerror="this.src='https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80'"/>
+      <img class="room-img" src="standard-room.jpg" alt="Standard Room"/>
       <div class="room-body">
         <div class="room-name">Standard Room</div>
         <div class="room-size">460 sq.ft · Queen bed</div>
@@ -489,24 +496,35 @@
         <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('standard')">Reserve</button>
       </div>
     </div>
-    <div class="room-card" data-slug="deluxe" onclick="selectRoomBySlug('deluxe')">
-      <img class="room-img" src="https://ak-d.tripcdn.com/images/0223812000gawgsdf2734_R_339_206_R5_D.jpg" alt="Deluxe Room" onerror="this.src='https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80'"/>
+    <div class="room-card" data-slug="family" onclick="selectRoomBySlug('family')">
+      <img class="room-img" src="family-room.jpg" alt="Family Room"/>
       <div class="room-body">
-        <div class="room-name">Deluxe Room</div>
-        <div class="room-size">580 sq.ft · King bed</div>
-        <div class="room-price"><span class="amt" data-price-slug="deluxe">₹3,500</span><span class="per">/ night</span></div>
-        <div class="room-tags"><span class="rtag">AC</span><span class="rtag">Work desk</span><span class="rtag">Kettle</span></div>
-        <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('deluxe')">Reserve</button>
+        <div class="room-name">Family Room</div>
+        <div class="room-size">620 sq.ft · 2 King beds</div>
+        <div class="room-price"><span class="amt" data-price-slug="family">₹5,000</span><span class="per">/ night</span></div>
+        <div class="room-tags"><span class="rtag">AC</span><span class="rtag">Smart TV</span><span class="rtag">Wi-Fi</span></div>
+        <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('family')">Reserve</button>
       </div>
     </div>
-    <div class="room-card" data-slug="suite" onclick="selectRoomBySlug('suite')">
-      <img class="room-img" src="https://ak-d.tripcdn.com/images/0223f12000gawgczb9BEC_R_339_206_R5_D.jpg" alt="Executive Suite" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80'"/>
+    <div class="room-card" data-slug="premium" onclick="selectRoomBySlug('premium')">
+      <img class="room-img" src="premium-room.jpg" alt="Premium Room"/>
       <div class="room-body">
-        <div class="room-name">Executive Suite</div>
-        <div class="room-size">750 sq.ft · King bed + lounge</div>
-        <div class="room-price"><span class="amt" data-price-slug="suite">₹4,800</span><span class="per">/ night</span></div>
-        <div class="room-tags"><span class="rtag">Satellite TV</span><span class="rtag">Garden view</span></div>
-        <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('suite')">Reserve</button>
+        <div class="room-name">Premium Room</div>
+        <div class="room-size">540 sq.ft · King bed</div>
+        <div class="room-price"><span class="amt" data-price-slug="premium">₹3,000</span><span class="per">/ night</span></div>
+        <div class="room-tiers">Single ₹3,000 · Double ₹3,500 · Triple ₹4,000</div>
+        <div class="room-tags"><span class="rtag">AC</span><span class="rtag">Smart TV</span><span class="rtag">Wi-Fi</span></div>
+        <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('premium')">Reserve</button>
+      </div>
+    </div>
+    <div class="room-card" data-slug="penthouse" onclick="selectRoomBySlug('penthouse')">
+      <img class="room-img" src="penthouse-1.jpg" alt="Pent House"/>
+      <div class="room-body">
+        <div class="room-name">Pent House</div>
+        <div class="room-size">Private rooftop · Up to 30 guests</div>
+        <div class="room-price"><span class="amt" data-price-slug="penthouse">₹10,000</span><span class="per">/ night</span></div>
+        <div class="room-tags"><span class="rtag">Private Rooftop</span><span class="rtag">Get-togethers</span></div>
+        <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('penthouse')">Reserve</button>
       </div>
     </div>
   </div>
@@ -646,12 +664,12 @@
     <div>
       <div class="summary">
         <h3>Booking summary</h3>
-        <div class="srow"><span class="sl">Room</span><span id="sum-room">Deluxe Room</span></div>
+        <div class="srow"><span class="sl">Room</span><span id="sum-room">Family Room</span></div>
         <div class="srow"><span class="sl">Check-in</span><span id="sum-checkin">—</span></div>
         <div class="srow"><span class="sl">Check-out</span><span id="sum-checkout">—</span></div>
         <div class="srow"><span class="sl">Guests</span><span id="sum-guests">2 Adults</span></div>
         <div class="srow"><span class="sl">Nights</span><span id="sum-nights">1 Night</span></div>
-        <div class="srow"><span class="sl">Room rate</span><span id="sum-rate">₹3,500/night</span></div>
+        <div class="srow"><span class="sl">Room rate</span><span id="sum-rate">₹5,000/night</span></div>
         <div class="srow"><span class="sl">Taxes (18% GST)</span><span id="sum-tax">₹630</span></div>
         <div class="srow"><span class="sl">Promo discount</span><span id="sum-disc">— ₹0</span></div>
         <div class="stotal"><span class="tl">Total</span><span class="tv" id="sum-total">₹4,130</span></div>
@@ -709,7 +727,7 @@
       <p>A peaceful, affordable haven in South Chennai. Clean rooms, warm staff, quiet surroundings — every stay is a retreat.</p>
       <div class="foot-social" id="foot-social"></div>
     </div>
-    <div class="foot-col"><h5>Rooms</h5><ul><li><a href="#rooms">Standard Room</a></li><li><a href="#rooms">Deluxe Room</a></li><li><a href="#rooms">Executive Suite</a></li></ul></div>
+    <div class="foot-col"><h5>Rooms</h5><ul><li><a href="#rooms">Standard Room</a></li><li><a href="#rooms">Family Room</a></li><li><a href="#rooms">Premium Room</a></li><li><a href="#rooms">Pent House</a></li></ul></div>
     <div class="foot-col"><h5>Hotel</h5><ul><li><a href="#about">About us</a></li><li><a href="#amenities">Amenities</a></li><li><a href="#resto-bar">Resto Bar</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#location">Contact</a></li></ul></div>
     <div class="foot-col"><h5>Policies</h5><ul><li><a href="#payment">Cancellation</a></li><li><a href="#">Privacy policy</a></li><li><a href="#">Terms of service</a></li></ul></div>
   </div>
@@ -805,6 +823,10 @@ const photos = [
   { src:'https://ak-d.tripcdn.com/images/0223f12000gawgczb9BEC_R_339_206_R5_D.jpg', cap:'Lift lobby' },
   { src:'https://ak-d.tripcdn.com/images/0222s12000gawgknw7C21_R_339_206_R5_D.jpg', cap:'Hotel overview' },
   { src:'https://ak-d.tripcdn.com/images/0222712000gawg9ww037E_R_339_206_R5_D.jpg', cap:'Exterior' },
+  { src:'gallery-lounge.jpg', cap:'Lounge' },
+  { src:'gallery-bathroom.jpg', cap:'Bathroom' },
+  { src:'lobby-1.jpg', cap:'Hotel lobby' },
+  { src:'lobby-2.jpg', cap:'Hotel lobby' },
 ];
 let currentPhoto = 0;
 function openLightbox(idx){
@@ -840,7 +862,7 @@ document.getElementById('checkout').min = fmt(tomorrow);
 
 document.getElementById('checkin').addEventListener('change', updateSummaryDates);
 document.getElementById('checkout').addEventListener('change', updateSummaryDates);
-document.getElementById('guests').addEventListener('change', ()=>{ document.getElementById('sum-guests').textContent = document.getElementById('guests').value; });
+document.getElementById('guests').addEventListener('change', ()=>{ document.getElementById('sum-guests').textContent = document.getElementById('guests').value; refreshRoomPriceDisplays(); refreshQuote(); });
 
 function formatDate(d){ const o=new Date(d); return o.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
 function money(n){ return '₹' + Number(n||0).toLocaleString('en-IN'); }
@@ -857,20 +879,43 @@ function updateSummaryDates(){
   }
 }
 
-// Populated from GET /api/rooms on load: { standard: {...}, deluxe: {...}, suite: {...} }
+// Populated from GET /api/rooms on load: { standard: {...}, family: {...}, premium: {...}, penthouse: {...} }
 let ROOMS_BY_SLUG = {};
-let selectedRoom = { slug:'deluxe', id:null, name:'Deluxe Room', price:3500 };
+let selectedRoom = { slug:'family', id:null, name:'Family Room', price:5000 };
 let appliedPromoCode = null;
+
+// Mirrors the server's routes/pricing.js — only affects display before the
+// authoritative /api/payment/quote call confirms the real charge amount.
+function occupancyTierFromGuests(guests){
+  const g = String(guests||'').toLowerCase();
+  if(g.includes('1 adult') && !g.includes('2') && !g.includes('3')) return 'single';
+  if(g.includes('child') || g.includes('3 adult')) return 'triple';
+  return 'double';
+}
+function roomRateFor(room, guests){
+  if(!room || !room.occupancyPricing) return room ? room.basePrice : 0;
+  const tier = occupancyTierFromGuests(guests);
+  return room.occupancyPricing[tier] || room.basePrice;
+}
+function currentGuests(){ return document.getElementById('guests').value; }
+
+function refreshRoomPriceDisplays(){
+  Object.keys(ROOMS_BY_SLUG).forEach(slug => {
+    const priceEl = document.querySelector(`[data-price-slug="${slug}"]`);
+    if(priceEl) priceEl.textContent = money(roomRateFor(ROOMS_BY_SLUG[slug], currentGuests()));
+  });
+  if(selectedRoom.slug && ROOMS_BY_SLUG[selectedRoom.slug]){
+    selectedRoom.price = roomRateFor(ROOMS_BY_SLUG[selectedRoom.slug], currentGuests());
+    document.getElementById('sum-rate').textContent = money(selectedRoom.price) + '/night';
+  }
+}
 
 async function loadRooms(){
   try{
     const rooms = await api('/api/rooms');
-    rooms.forEach(r => {
-      ROOMS_BY_SLUG[r.slug] = r;
-      const priceEl = document.querySelector(`[data-price-slug="${r.slug}"]`);
-      if(priceEl) priceEl.textContent = money(r.basePrice);
-    });
-    if(ROOMS_BY_SLUG['deluxe']) selectRoomBySlug('deluxe', { skipScroll:true });
+    rooms.forEach(r => { ROOMS_BY_SLUG[r.slug] = r; });
+    refreshRoomPriceDisplays();
+    if(ROOMS_BY_SLUG['family']) selectRoomBySlug('family', { skipScroll:true });
   }catch(err){
     console.warn('Could not load live room data — showing static fallback prices.', err.message);
   }
@@ -879,7 +924,7 @@ async function loadRooms(){
 function selectRoomBySlug(slug, opts={}){
   const room = ROOMS_BY_SLUG[slug];
   selectedRoom = room
-    ? { slug, id: room._id, name: room.name, price: room.basePrice }
+    ? { slug, id: room._id, name: room.name, price: roomRateFor(room, currentGuests()) }
     : { slug, id: null, name: slug, price: selectedRoom.price };
   document.getElementById('sum-room').textContent = selectedRoom.name;
   document.getElementById('sum-rate').textContent = money(selectedRoom.price) + '/night';
@@ -906,8 +951,9 @@ async function refreshQuote(){
   try{
     const quote = await api('/api/payment/quote', {
       method:'POST',
-      body: JSON.stringify({ roomId: selectedRoom.id, checkIn: ci, checkOut: co, promoCode: appliedPromoCode }),
+      body: JSON.stringify({ roomId: selectedRoom.id, checkIn: ci, checkOut: co, guests: currentGuests(), promoCode: appliedPromoCode }),
     });
+    document.getElementById('sum-rate').textContent = money(quote.roomRate) + '/night';
     document.getElementById('sum-tax').textContent = money(quote.taxAmount);
     document.getElementById('sum-disc').textContent = quote.discountAmount>0 ? '— ' + money(quote.discountAmount) : '— ₹0';
     document.getElementById('sum-total').textContent = money(quote.totalAmount);
@@ -949,7 +995,7 @@ async function checkAvailability(){
   resultBox.classList.add('show');
 
   try{
-    const data = await api(`/api/availability?checkIn=${ci}&checkOut=${co}`);
+    const data = await api(`/api/availability?checkIn=${ci}&checkOut=${co}&guests=${encodeURIComponent(currentGuests())}`);
     listBox.innerHTML = data.rooms.map(r => r.available ? `
       <div class="avail-room">
         <div><div class="avail-room-name">${r.name}</div><div class="avail-room-sub">${data.nights} Night${data.nights!==1?'s':''} · ${r.unitsFree} left</div></div>

@@ -1,14 +1,17 @@
 const express = require('express');
 const Room = require('./Room');
 const Booking = require('./Booking');
+const { getRoomRate } = require('./pricing');
 
 const router = express.Router();
 
-// GET /api/availability?checkIn=YYYY-MM-DD&checkOut=YYYY-MM-DD
+// GET /api/availability?checkIn=YYYY-MM-DD&checkOut=YYYY-MM-DD&guests=2+Adults
 // Returns each active room with how many units are free for that date range.
+// `guests` is optional — only affects the displayed price for rooms with
+// occupancy-tiered pricing (see pricing.js); defaults to double-occupancy rate.
 router.get('/', async (req, res) => {
   try {
-    const { checkIn, checkOut } = req.query;
+    const { checkIn, checkOut, guests } = req.query;
     if (!checkIn || !checkOut) {
       return res.status(400).json({ error: 'checkIn and checkOut are required (YYYY-MM-DD).' });
     }
@@ -38,7 +41,8 @@ router.get('/', async (req, res) => {
         name: room.name,
         sizeSqft: room.sizeSqft,
         bedType: room.bedType,
-        basePrice: room.basePrice,
+        basePrice: getRoomRate(room, guests),
+        occupancyPricing: room.occupancyPricing,
         amenities: room.amenities,
         images: room.images,
         unitsFree,

@@ -15,21 +15,32 @@ async function seed() {
       slug: 'standard', name: 'Standard Room', sizeSqft: 460, bedType: 'Queen Bed',
       basePrice: 2880, totalUnits: 4,
       amenities: ['AC', 'Smart TV', 'Wi-Fi', 'Hot Water'],
-      images: ['https://ak-d.tripcdn.com/images/0220w12000gawg8ob8E61_R_339_206_R5_D.jpg'],
+      images: ['standard-room.jpg'],
     },
     {
-      slug: 'deluxe', name: 'Deluxe Room', sizeSqft: 580, bedType: 'King Bed',
-      basePrice: 3500, totalUnits: 3,
-      amenities: ['AC', 'Smart TV', 'Work Desk', 'Kettle'],
-      images: ['https://ak-d.tripcdn.com/images/0223812000gawgsdf2734_R_339_206_R5_D.jpg'],
+      slug: 'family', name: 'Family Room', sizeSqft: 620, bedType: '2 King Beds',
+      basePrice: 5000, totalUnits: 2,
+      amenities: ['AC', 'Smart TV', 'Wi-Fi', '2 King Beds'],
+      images: ['family-room.jpg'],
     },
     {
-      slug: 'suite', name: 'Executive Suite', sizeSqft: 750, bedType: 'King Bed + Lounge',
-      basePrice: 4800, totalUnits: 2,
-      amenities: ['Satellite TV', 'Toiletries', 'Garden View'],
-      images: ['https://ak-d.tripcdn.com/images/0223f12000gawgczb9BEC_R_339_206_R5_D.jpg'],
+      slug: 'premium', name: 'Premium Room', sizeSqft: 540, bedType: 'King Bed',
+      basePrice: 3000, // = single-occupancy rate; see occupancyPricing for the rest
+      occupancyPricing: { single: 3000, double: 3500, triple: 4000 },
+      totalUnits: 3,
+      amenities: ['AC', 'Smart TV', 'Wi-Fi', 'Premium Interiors'],
+      images: ['premium-room.jpg'],
+    },
+    {
+      slug: 'penthouse', name: 'Pent House', sizeSqft: 1200, bedType: 'Private Rooftop',
+      basePrice: 10000, totalUnits: 1,
+      amenities: ['Private Rooftop', 'Seating for 30', 'Get-together Ready'],
+      images: ['penthouse-1.jpg', 'penthouse-2.jpg', 'penthouse-3.jpg'],
     },
   ];
+
+  // Drop the old room types entirely — they're being replaced, not kept alongside.
+  await Room.deleteMany({ slug: { $in: ['deluxe', 'suite'] } });
 
   for (const r of rooms) {
     await Room.findOneAndUpdate({ slug: r.slug }, r, { upsert: true, new: true });

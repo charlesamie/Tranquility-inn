@@ -5,6 +5,7 @@ const validator = require('validator');
 const Room = require('./Room');
 const Booking = require('./Booking');
 const Promo = require('./Promo');
+const { getRoomRate } = require('./pricing');
 const { sendBookingConfirmations, whatsappLink, instagramLink } = require('./notify');
 
 const router = express.Router();
@@ -21,7 +22,7 @@ function makeBookingRef() {
 }
 
 // Server-side price computation — never trust a total sent from the browser.
-async function computeQuote({ roomId, checkIn, checkOut, promoCode }) {
+async function computeQuote({ roomId, checkIn, checkOut, guests, promoCode }) {
   const room = await Room.findById(roomId);
   if (!room || !room.active) throw new Error('Room not found or unavailable.');
 
@@ -36,7 +37,8 @@ async function computeQuote({ roomId, checkIn, checkOut, promoCode }) {
   });
   if (overlapping >= room.totalUnits) throw new Error('This room type is fully booked for those dates.');
 
-  const baseAmount = room.basePrice * nights;
+  const roomRate = getRoomRate(room, guests);
+  const baseAmount = roomRate * nights;
   const taxAmount = Math.round(baseAmount * 0.18);
 
   let discountAmount = 0;
@@ -51,7 +53,7 @@ async function computeQuote({ roomId, checkIn, checkOut, promoCode }) {
   }
 
   const totalAmount = baseAmount + taxAmount - discountAmount;
-  return { room, nights, baseAmount, taxAmount, discountAmount, totalAmount, appliedCode };
+  return { room, roomRate, nights, baseAmount, taxAmount, discountAmount, totalAmount, appliedCode };
 }
 
 // POST /api/payment/quote — public, price preview before payment (no DB writes)
@@ -61,7 +63,7 @@ router.post('/quote', async (req, res) => {
     res.json({
       roomName: quote.room.name,
       nights: quote.nights,
-      roomRate: quote.room.basePrice,
+      roomRate: quote.roomRate,
       baseAmount: quote.baseAmount,
       taxAmount: quote.taxAmount,
       discountAmount: quote.discountAmount,
@@ -91,7 +93,7 @@ router.post('/create-order', async (req, res) => {
       return res.status(400).json({ error: 'Enter a valid email address.' });
     }
 
-    const quote = await computeQuote({ roomId, checkIn, checkOut, promoCode });
+    const quote = await computeQuote({ roomId, checkIn, checkOut, guests, promoCode });
 
     const order = await razorpay.orders.create({
       amount: quote.totalAmount * 100, // paise
@@ -111,7 +113,7 @@ router.post('/create-order', async (req, res) => {
       guestFirstName, guestLastName, guestEmail, guestPhone,
       idProofType: idProofType || 'Aadhaar Card',
       idProofNumber: idProofNumber || 'N/A',
-      roomRate: quote.room.basePrice,
+      roomRate: quote.roomRate,
       baseAmount: quote.baseAmount,
       taxAmount: quote.taxAmount,
       discountAmount: quote.discountAmount,
