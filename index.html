@@ -190,12 +190,28 @@
   .rbar-pct{width:32px;text-align:right;color:var(--clay-soft);}
   .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(247,245,240,.14);}
   .review-card{background:var(--ink);padding:1.9rem;}
-  .reviewer{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.9rem;}
+  .reviewer{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem;}
+  .reviewer-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;}
   .reviewer-name{font-size:.88rem;font-weight:500;}
   .reviewer-date{font-size:.68rem;color:rgba(247,245,240,.4);}
   .review-stars{color:var(--clay-soft);font-size:.78rem;letter-spacing:.15em;margin-bottom:.8rem;}
   .review-text{font-size:.85rem;color:rgba(247,245,240,.62);line-height:1.75;font-style:italic;margin-bottom:1rem;}
   .review-source{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(201,154,107,.6);}
+
+  /* REVIEWS SLIDER (Google Places reviews) */
+  .reviews-slider{position:relative;padding:0 3.2rem;}
+  .reviews-viewport{overflow:hidden;background:rgba(247,245,240,.14);}
+  .reviews-track{display:flex;transition:transform .45s cubic-bezier(.65,0,.35,1);}
+  .review-slide{flex:0 0 100%;background:var(--ink);padding:1.9rem 2.2rem;min-height:180px;}
+  .rev-nav{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:1px solid rgba(247,245,240,.3);color:var(--paper);font-size:1.3rem;width:44px;height:44px;cursor:pointer;transition:border-color .2s;z-index:2;}
+  .rev-nav:hover{border-color:var(--paper);}
+  .rev-prev{left:0;}
+  .rev-next{right:0;}
+  .rev-dots{display:flex;justify-content:center;gap:.5rem;margin-top:1.4rem;}
+  .rev-dot{width:7px;height:7px;border-radius:50%;background:rgba(247,245,240,.25);border:none;cursor:pointer;padding:0;transition:background .2s,transform .2s;}
+  .rev-dot.active{background:var(--clay-soft);transform:scale(1.3);}
+  .rev-google-badge{display:flex;align-items:center;gap:.4rem;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,245,240,.4);margin-top:1rem;justify-content:center;}
+  @media(max-width:640px){ .reviews-slider{padding:0 2.6rem;} .review-slide{padding:1.6rem 1.2rem;} .rev-nav{width:36px;height:36px;font-size:1.1rem;} }
 
   /* PAYMENT */
   .payment-grid{display:grid;grid-template-columns:1.2fr .9fr;gap:3.5rem;align-items:start;}
@@ -588,14 +604,22 @@
       <div class="rbar-row"><span class="rbar-label">Comfort</span><div class="rbar-track"><div class="rbar-fill" style="width:85%"></div></div><span class="rbar-pct">85%</span></div>
     </div>
   </div>
-  <div class="reviews-grid" id="reviews-grid">
-    <div class="review-card"><div class="reviewer"><div class="reviewer-name">Ramesh K.</div><div class="reviewer-date">Mar 2023</div></div><div class="review-stars">★★★★★</div><p class="review-text">We stayed as a couple for three nights and it was one of the most peaceful experiences. Clean rooms, friendly staff, quiet location — exactly what we needed.</p><div class="review-source">Via MakeMyTrip</div></div>
-    <div class="review-card"><div class="reviewer"><div class="reviewer-name">Priya S.</div><div class="reviewer-date">Jan 2024</div></div><div class="review-stars">★★★★☆</div><p class="review-text">A good escape from the city hustle. The foot massage service was excellent — I left feeling completely relaxed. The owner personally checks in on guests.</p><div class="review-source">Via TripAdvisor</div></div>
-    <div class="review-card"><div class="reviewer"><div class="reviewer-name">Arun S.</div><div class="reviewer-date">Sep 2023</div></div><div class="review-stars">★★★★☆</div><p class="review-text">Quiet area, tidy rooms, very helpful staff. Proximity to Chennai Trade Centre was a big plus for my business trip. Would return.</p><div class="review-source">Via Booking.com</div></div>
-    <div class="review-card"><div class="reviewer"><div class="reviewer-name">Meera & Family</div><div class="reviewer-date">Dec 2023</div></div><div class="review-stars">★★★★★</div><p class="review-text">Safe, comfortable and affordable with the kids. Breakfast was a proper South Indian spread, and the garden was lovely for the children.</p><div class="review-source">Via Trip.com</div></div>
-    <div class="review-card"><div class="reviewer"><div class="reviewer-name">Vijay P.</div><div class="reviewer-date">Feb 2024</div></div><div class="review-stars">★★★★☆</div><p class="review-text">Good value. Slightly off the main road, which is exactly what makes it tranquil. Comfortable AC rooms and fast Wi-Fi throughout.</p><div class="review-source">Via MakeMyTrip</div></div>
-    <div class="review-card"><div class="reviewer"><div class="reviewer-name">Shalini T.</div><div class="reviewer-date">Nov 2023</div></div><div class="review-stars">★★★★★</div><p class="review-text">The people who run this place are warm and thoughtful. After the reflexology session I felt like a new person. Back on every Chennai trip.</p><div class="review-source">Via Google Reviews</div></div>
+  <div class="reviews-slider">
+    <button class="rev-nav rev-prev" onclick="shiftReview(-1)" aria-label="Previous review">‹</button>
+    <div class="reviews-viewport">
+      <div class="reviews-track" id="reviews-track">
+        <div class="review-slide"><div class="reviewer"><div><div class="reviewer-name">Ramesh K.</div><div class="reviewer-date">Mar 2023</div></div></div><div class="review-stars">★★★★★</div><p class="review-text">We stayed as a couple for three nights and it was one of the most peaceful experiences. Clean rooms, friendly staff, quiet location — exactly what we needed.</p><div class="review-source">Via MakeMyTrip</div></div>
+        <div class="review-slide"><div class="reviewer"><div><div class="reviewer-name">Priya S.</div><div class="reviewer-date">Jan 2024</div></div></div><div class="review-stars">★★★★☆</div><p class="review-text">A good escape from the city hustle. The foot massage service was excellent — I left feeling completely relaxed. The owner personally checks in on guests.</p><div class="review-source">Via TripAdvisor</div></div>
+        <div class="review-slide"><div class="reviewer"><div><div class="reviewer-name">Arun S.</div><div class="reviewer-date">Sep 2023</div></div></div><div class="review-stars">★★★★☆</div><p class="review-text">Quiet area, tidy rooms, very helpful staff. Proximity to Chennai Trade Centre was a big plus for my business trip. Would return.</p><div class="review-source">Via Booking.com</div></div>
+        <div class="review-slide"><div class="reviewer"><div><div class="reviewer-name">Meera & Family</div><div class="reviewer-date">Dec 2023</div></div></div><div class="review-stars">★★★★★</div><p class="review-text">Safe, comfortable and affordable with the kids. Breakfast was a proper South Indian spread, and the garden was lovely for the children.</p><div class="review-source">Via Trip.com</div></div>
+        <div class="review-slide"><div class="reviewer"><div><div class="reviewer-name">Vijay P.</div><div class="reviewer-date">Feb 2024</div></div></div><div class="review-stars">★★★★☆</div><p class="review-text">Good value. Slightly off the main road, which is exactly what makes it tranquil. Comfortable AC rooms and fast Wi-Fi throughout.</p><div class="review-source">Via MakeMyTrip</div></div>
+        <div class="review-slide"><div class="reviewer"><div><div class="reviewer-name">Shalini T.</div><div class="reviewer-date">Nov 2023</div></div></div><div class="review-stars">★★★★★</div><p class="review-text">The people who run this place are warm and thoughtful. After the reflexology session I felt like a new person. Back on every Chennai trip.</p><div class="review-source">Via Google Reviews</div></div>
+      </div>
+    </div>
+    <button class="rev-nav rev-next" onclick="shiftReview(1)" aria-label="Next review">›</button>
   </div>
+  <div class="rev-dots" id="reviews-dots"></div>
+  <div class="rev-google-badge" id="reviews-badge"></div>
 </section>
 
 <!-- PAYMENT -->
@@ -671,7 +695,7 @@
         <div class="nearby-item"><span>Olympia Tech Park</span><span>2.7 km</span></div>
       </div>
     </div>
-    <iframe class="map-frame" src="https://maps.google.com/maps?q=TRANQUILITY%20INN%2C%20Ramapuram%2C%20River%20View%20Colony%2C%20Manapakkam%2C%20Chennai%2C%20Greater%20Chennai%2C%20Tamil%20Nadu%20600125&t=&z=16&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe class="map-frame" id="map-frame" src="" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 </section>
 
@@ -728,6 +752,19 @@ const API_BASE = '';
 // link returned by the API (pre-filled with the booking reference).
 const SITE_WHATSAPP_NUMBER = '919884032292'; // digits only, international format
 const SITE_INSTAGRAM_URL = 'https://instagram.com/tranquilityinn.chennai';
+
+// Google Maps Embed API — needs the "Maps Embed API" enabled in Google Cloud
+// Console (same project you use for Places). This key is visible in the page
+// source, so restrict it to your domain (HTTP referrer restriction), not by IP.
+const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
+const HOTEL_ADDRESS = 'TRANQUILITY INN, Ramapuram, River View Colony, Manapakkam, Chennai, Greater Chennai, Tamil Nadu 600125';
+
+function loadMap(){
+  const frame = document.getElementById('map-frame');
+  if(!frame) return;
+  frame.src = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(HOTEL_ADDRESS)}&zoom=16`;
+}
+loadMap();
 
 function waLinkGeneric(){
   return `https://wa.me/${SITE_WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi Tranquility Inn! I have a question about a stay.')}`;
@@ -991,29 +1028,85 @@ async function processPayment(){
 }
 function closeModal(){ document.getElementById('confirmModal').classList.remove('open'); }
 
-// Swap in real guest reviews once any are approved; otherwise the static
-// testimonials already in the page stay put as a sensible fallback.
+// Swap in live Google reviews once the backend's Places API route responds;
+// otherwise the static testimonials already in the page stay put as a
+// sensible fallback (and the slider still works over them either way).
+let reviewSlides = [];
+let currentReview = 0;
+let reviewAutoplay = null;
+
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function reviewSlideHTML(r){
+  const avatar = r.profile_photo_url ? `<img class="reviewer-avatar" src="${r.profile_photo_url}" alt="" referrerpolicy="no-referrer">` : '';
+  return `
+    <div class="review-slide">
+      <div class="reviewer">${avatar}<div><div class="reviewer-name">${escapeHtml(r.author_name)}</div><div class="reviewer-date">${escapeHtml(r.relative_time_description || '')}</div></div></div>
+      <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+      <p class="review-text">${escapeHtml(r.text)}</p>
+      <div class="review-source">Via Google</div>
+    </div>`;
+}
+
+function renderReviewSlider(){
+  const track = document.getElementById('reviews-track');
+  const dotsBox = document.getElementById('reviews-dots');
+  if(!track || !reviewSlides.length) return;
+  track.innerHTML = reviewSlides.map(reviewSlideHTML).join('');
+  dotsBox.innerHTML = reviewSlides.map((_, i) => `<button class="rev-dot" onclick="showReview(${i})" aria-label="Go to review ${i+1}"></button>`).join('');
+  currentReview = 0;
+  showReview(0);
+  clearInterval(reviewAutoplay);
+  if(reviewSlides.length > 1) reviewAutoplay = setInterval(() => shiftReview(1), 7000);
+}
+
+function showReview(idx){
+  if(!reviewSlides.length) return;
+  currentReview = (idx + reviewSlides.length) % reviewSlides.length;
+  document.getElementById('reviews-track').style.transform = `translateX(-${currentReview * 100}%)`;
+  document.querySelectorAll('#reviews-dots .rev-dot').forEach((d, i) => d.classList.toggle('active', i === currentReview));
+}
+function shiftReview(dir){ showReview(currentReview + dir); }
+
 async function loadReviews(){
   try{
-    const data = await api('/api/reviews');
-    if(!data.reviews || !data.reviews.length) return;
-    document.getElementById('reviews-grid').innerHTML = data.reviews.map(r => `
-      <div class="review-card">
-        <div class="reviewer"><div class="reviewer-name">${r.reviewerName}</div><div class="reviewer-date">${new Date(r.createdAt).toLocaleDateString('en-IN',{month:'short',year:'numeric'})}</div></div>
-        <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-        <p class="review-text">${r.text}</p>
-        <div class="review-source">Via ${r.source}</div>
-      </div>`).join('');
-    if(data.summary?.count){
-      const scoreEl = document.querySelector('.rating-score');
-      const metaEl = document.querySelector('.rating-meta');
-      if(scoreEl) scoreEl.textContent = data.summary.average;
-      if(metaEl) metaEl.textContent = data.summary.count + ' reviews';
-    }
+    const data = await api('/api/google-reviews');
+    if(!data.reviews || !data.reviews.length) return; // keep static fallback slides
+    reviewSlides = data.reviews;
+    renderReviewSlider();
+    const scoreEl = document.querySelector('.rating-score');
+    const metaEl = document.querySelector('.rating-meta');
+    const badge = document.getElementById('reviews-badge');
+    if(data.rating && scoreEl) scoreEl.textContent = data.rating;
+    if(data.userRatingsTotal && metaEl) metaEl.textContent = data.userRatingsTotal + ' reviews';
+    if(badge) badge.textContent = 'Live from Google · capped at 5 reviews by Google\'s API';
   }catch(err){
-    console.warn('Live reviews unavailable — showing default testimonials.', err.message);
+    console.warn('Live Google reviews unavailable — showing default testimonials.', err.message);
+    // Still wire up the slider controls over the static fallback slides already in the HTML.
+    reviewSlides = Array.from(document.querySelectorAll('#reviews-track .review-slide'));
+    const dotsBox = document.getElementById('reviews-dots');
+    dotsBox.innerHTML = reviewSlides.map((_, i) => `<button class="rev-dot" onclick="showReview(${i})" aria-label="Go to review ${i+1}"></button>`).join('');
+    showReview(0);
+    clearInterval(reviewAutoplay);
+    reviewAutoplay = setInterval(() => shiftReview(1), 7000);
   }
 }
+
+// Basic touch-swipe support for the reviews slider
+(function(){
+  const vp = document.querySelector('.reviews-viewport');
+  if(!vp) return;
+  let startX = null;
+  vp.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive:true });
+  vp.addEventListener('touchend', e => {
+    if(startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if(Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
+    startX = null;
+  }, { passive:true });
+})();
 
 loadRooms();
 loadReviews();
