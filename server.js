@@ -30,7 +30,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'script-src': ["'self'", 'https://checkout.razorpay.com'],
+      'script-src': ["'self'", "'unsafe-inline'",'https://checkout.razorpay.com'],
       'frame-src': ["'self'", 'https://api.razorpay.com', 'https://www.google.com'],
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com'],
