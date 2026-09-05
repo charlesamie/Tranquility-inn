@@ -386,7 +386,7 @@
 <div class="ledger">
   <div class="wrap ledger-inner" style="padding:0;">
     <div class="ledger-item"><div class="ledger-label">Chennai, now</div><div class="ledger-val" id="clock">—</div></div>
-    <div class="ledger-item"><div class="ledger-label">Rating</div><div class="ledger-val">4.2 · 80+ reviews</div></div>
+    <div class="ledger-item"><div class="ledger-label">Rating</div><div class="ledger-val" id="hero-rating">4.2 · 80+ reviews</div></div>
     <div class="ledger-item"><div class="ledger-label">Airport</div><div class="ledger-val">5 km</div></div>
     <div class="ledger-item"><div class="ledger-label">Check-in / out</div><div class="ledger-val">1PM · 11AM</div></div>
   </div>
@@ -440,7 +440,6 @@
     <div class="gitem" onclick="openLightbox(4)"><img src="https://ak-d.tripcdn.com/images/0222s12000gawgknw7C21_R_339_206_R5_D.jpg" alt="Hotel overview" onerror="this.src='https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80'"/><div class="gcap">Hotel overview</div></div>
     <div class="gitem" onclick="openLightbox(5)"><img src="https://ak-d.tripcdn.com/images/0222712000gawg9ww037E_R_339_206_R5_D.jpg" alt="Exterior" onerror="this.src='https://images.unsplash.com/photo-1596178060671-7a80dc8059ea?w=600&q=80'"/><div class="gcap">Exterior</div></div>
   </div>
-  <div class="gallery-foot">Click any photo to enlarge · Photos via Trip.com</div>
 </section>
 
 <div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
@@ -461,8 +460,8 @@
       <p style="margin-top:1.6rem;">Tucked into the residential quiet of Manapakkam, Tranquility Inn has been Chennai's calmest urban stay since 2022. We keep things simple — spotless rooms, an attentive front desk, and nothing that gets in the way of rest.</p>
       <p>Whether you're here for business, family or a few days to yourself, the calm you find here tends to follow you home.</p>
       <div class="stats">
-        <div class="stat"><div class="num">80+</div><div class="lbl">Guest reviews</div></div>
-        <div class="stat"><div class="num">4.2★</div><div class="lbl">MakeMyTrip</div></div>
+        <div class="stat"><div class="num" id="about-stat-count">80+</div><div class="lbl">Guest reviews</div></div>
+        <div class="stat"><div class="num" id="about-stat-score">4.2★</div><div class="lbl">Google Reviews</div></div>
         <div class="stat"><div class="num">24/7</div><div class="lbl">Front desk</div></div>
         <div class="stat"><div class="num">5 km</div><div class="lbl">To airport</div></div>
       </div>
@@ -1082,6 +1081,13 @@ async function loadReviews(){
     if(data.rating && scoreEl) scoreEl.textContent = data.rating;
     if(data.userRatingsTotal && metaEl) metaEl.textContent = data.userRatingsTotal + ' reviews';
     if(badge) badge.textContent = 'Live from Google · capped at 5 reviews by Google\'s API';
+
+    const heroRating = document.getElementById('hero-rating');
+    if(heroRating && data.rating) heroRating.textContent = data.rating + ' · ' + (data.userRatingsTotal || 0) + '+ reviews';
+    const aboutCount = document.getElementById('about-stat-count');
+    const aboutScore = document.getElementById('about-stat-score');
+    if(aboutCount && data.userRatingsTotal) aboutCount.textContent = data.userRatingsTotal + '+';
+    if(aboutScore && data.rating) aboutScore.textContent = data.rating + '★';
   }catch(err){
     console.warn('Live Google reviews unavailable — showing default testimonials.', err.message);
     // Still wire up the slider controls over the static fallback slides already in the HTML.
