@@ -7,18 +7,15 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
 
-const bcrypt = require('bcryptjs');
 const connectDB = require('./db');
 const Booking = require('./Booking');
-const Room = require('./Room');
-const Promo = require('./Promo');
-const Admin = require('./Admin');
 
 const authRoutes = require('./auth');
 const roomRoutes = require('./rooms');
 const availabilityRoutes = require('./availability');
 const promoRoutes = require('./promos');
 const reviewRoutes = require('./reviews');
+const googleReviewRoutes = require('./google-reviews');
 const bookingRoutes = require('./bookings');
 const paymentRoutes = require('./payment');
 const webhookRoutes = require('./webhook');
@@ -34,7 +31,7 @@ app.use(helmet({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       'script-src': ["'self'", 'https://checkout.razorpay.com'],
-      'frame-src': ["'self'", 'https://api.razorpay.com'],
+      'frame-src': ["'self'", 'https://api.razorpay.com', 'https://www.google.com'],
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com'],
       'img-src': ["'self'", 'data:', 'https:'],
@@ -72,6 +69,7 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/promos', promoRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/google-reviews', googleReviewRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payment', paymentRoutes);
 
@@ -118,41 +116,8 @@ function releaseStaleHolds() {
     .catch((err) => console.error('[cleanup] error:', err.message));
 }
 
-// Fills in the 3 room types, starter promo codes, and the first admin login
-// if they don't already exist. There's no remote shell on this deploy to run
-// `npm run seed` by hand, so this runs on every boot instead — every write
-// here is an upsert keyed on a unique field (slug/code/email), so re-running
-// it against an already-seeded database is a safe no-op.
-async function autoSeed() {
-  const rooms = [
-    { slug: 'standard', name: 'Standard Room', sizeSqft: 460, bedType: 'Queen Bed', basePrice: 2880, totalUnits: 4, amenities: ['AC', 'Smart TV', 'Wi-Fi', 'Hot Water'], images: ['https://ak-d.tripcdn.com/images/0220w12000gawg8ob8E61_R_339_206_R5_D.jpg'] },
-    { slug: 'deluxe', name: 'Deluxe Room', sizeSqft: 580, bedType: 'King Bed', basePrice: 3500, totalUnits: 3, amenities: ['AC', 'Smart TV', 'Work Desk', 'Kettle'], images: ['https://ak-d.tripcdn.com/images/0223812000gawgsdf2734_R_339_206_R5_D.jpg'] },
-    { slug: 'suite', name: 'Executive Suite', sizeSqft: 750, bedType: 'King Bed + Lounge', basePrice: 4800, totalUnits: 2, amenities: ['Satellite TV', 'Toiletries', 'Garden View'], images: ['https://ak-d.tripcdn.com/images/0223f12000gawgczb9BEC_R_339_206_R5_D.jpg'] },
-  ];
-  for (const r of rooms) await Room.findOneAndUpdate({ slug: r.slug }, r, { upsert: true });
-
-  const promos = [
-    { code: 'STAY3SAVE15', label: 'Extended stay — 15% off', discountPct: 15, minNights: 3, validTo: new Date('2026-12-31') },
-    { code: 'EARLYBIRD20', label: 'Early bird — 20% off', discountPct: 20, minNights: 1, validTo: new Date('2026-12-31') },
-    { code: 'WKNDBREAK', label: 'Weekend getaway — 5% off + free breakfast', discountPct: 5, minNights: 1, validTo: new Date('2026-12-31') },
-  ];
-  for (const p of promos) await Promo.findOneAndUpdate({ code: p.code }, p, { upsert: true });
-
-  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
-    const adminEmail = process.env.ADMIN_EMAIL.toLowerCase();
-    const exists = await Admin.findOne({ email: adminEmail });
-    if (!exists) {
-      const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
-      await Admin.create({ email: adminEmail, passwordHash, name: 'Hotel Manager', role: 'owner' });
-      console.log(`[autoseed] created admin account: ${adminEmail}`);
-    }
-  }
-  console.log('[autoseed] rooms + promo codes ready.');
-}
-
 connectDB()
-  .then(async () => {
-    await autoSeed().catch((err) => console.error('[autoseed] error:', err.message));
+  .then(() => {
     app.listen(PORT, () => console.log(`Tranquility Inn API running on port ${PORT}`));
     setInterval(releaseStaleHolds, 5 * 60 * 1000);
   })
