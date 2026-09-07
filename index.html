@@ -62,6 +62,19 @@
   .nav-cta{border:1px solid var(--ink);padding:.55rem 1.2rem;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;font-weight:500;transition:background .2s,color .2s;}
   .nav-cta:hover{background:var(--ink);color:var(--paper);}
 
+  /* MOBILE MENU — hamburger toggle + dropdown, shown only under 900px */
+  .menu-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;background:none;border:none;cursor:pointer;padding:0;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+  .menu-toggle span{display:block;width:100%;height:2px;background:var(--ink);transition:transform .25s ease,opacity .2s ease;}
+  .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0;}
+  .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .mobile-nav{display:none;flex-direction:column;background:var(--paper2);border-bottom:1px solid var(--line);overflow:hidden;max-height:0;transition:max-height .3s ease;}
+  .mobile-nav.open{display:flex;max-height:520px;}
+  .mobile-nav a{padding:1rem 5vw;font-size:.85rem;letter-spacing:.03em;text-decoration:none;color:var(--ink-soft);border-bottom:1px solid var(--line);-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+  .mobile-nav a:last-child{border-bottom:none;}
+  .mobile-nav a:hover{color:var(--ink);background:rgba(20,31,26,.03);}
+  .mobile-nav-cta{color:var(--clay) !important;font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem !important;}
+
   /* HERO */
   .hero{padding:6.5rem 5vw 3rem;display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;align-items:end;}
   .hero-title{font-size:clamp(2.7rem,5.4vw,4.6rem);line-height:1.02;font-weight:400;}
@@ -321,6 +334,7 @@
     .gallery-grid .g1{grid-column:1/3;grid-row:1;height:220px;}
     .foot-top{grid-template-columns:1fr 1fr;}
     .nav-links{display:none;}
+    .menu-toggle{display:flex;}
     .booking-inner{flex-direction:column;}
     .bfield{border-right:none;border-bottom:1px solid rgba(247,245,240,.14);}
     .form-row{grid-template-columns:1fr;}
@@ -364,7 +378,20 @@
       <li><a href="#location">Location</a></li>
     </ul>
     <a href="#payment" class="nav-cta">Book Now</a>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#gallery">Gallery</a>
+    <a href="#rooms">Rooms</a>
+    <a href="#amenities">Amenities</a>
+    <a href="#resto-bar">Resto Bar</a>
+    <a href="#offers">Offers</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#location">Location</a>
+    <a href="#payment" class="mobile-nav-cta">Book Now</a>
+  </div>
 </header>
 
 <!-- HERO -->
@@ -1160,6 +1187,32 @@ async function loadReviews(){
     if(Math.abs(dx) > 40) shiftReview(dx < 0 ? 1 : -1);
     startX = null;
   }, { passive:true });
+})();
+
+// Mobile hamburger menu
+(function(){
+  const toggle = document.getElementById('menu-toggle');
+  const panel = document.getElementById('mobile-nav');
+  if(!toggle || !panel) return;
+  toggle.addEventListener('click', () => {
+    const isOpen = panel.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  panel.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      panel.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+  function closeIfOutside(e){
+    if(!panel.classList.contains('open')) return;
+    if(!panel.contains(e.target) && !toggle.contains(e.target)){
+      panel.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+  document.addEventListener('click', closeIfOutside);
+  document.addEventListener('touchstart', closeIfOutside, { passive: true });
 })();
 
 loadRooms();
