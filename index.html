@@ -53,7 +53,7 @@
   nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5vw;}
   .logo{font-family:'Fraunces',serif;font-size:1.2rem;letter-spacing:.02em;}
   .logo-wrap{display:flex;align-items:center;gap:.7rem;margin-left:-5vw;}
-  .logo-mark{height:56px;width:auto;display:block;}
+  .logo-mark{height:84px;width:auto;display:block;}
   .foot-logo{height:56px;width:auto;margin-bottom:1.2rem;}
   .logo em{font-style:italic;color:var(--clay);}
   .nav-links{display:flex;gap:2.2rem;list-style:none;}
@@ -695,11 +695,11 @@
         <div class="srow"><span class="sl">Check-in</span><span id="sum-checkin">—</span></div>
         <div class="srow"><span class="sl">Check-out</span><span id="sum-checkout">—</span></div>
         <div class="srow"><span class="sl">Guests</span><span id="sum-guests">2 Adults</span></div>
-        <div class="srow"><span class="sl">Nights</span><span id="sum-nights">1 Night</span></div>
+        <div class="srow"><span class="sl">Nights</span><span id="sum-nights">—</span></div>
         <div class="srow"><span class="sl">Room rate</span><span id="sum-rate">₹5,000/night</span></div>
-        <div class="srow"><span class="sl">Taxes (18% GST)</span><span id="sum-tax">₹630</span></div>
+        <div class="srow"><span class="sl">Taxes (18% GST)</span><span id="sum-tax">—</span></div>
         <div class="srow"><span class="sl">Promo discount</span><span id="sum-disc"></span></div>
-        <div class="stotal"><span class="tl">Total</span><span class="tv" id="sum-total">₹4,130</span></div>
+        <div class="stotal"><span class="tl">Total</span><span class="tv" id="sum-total">—</span></div>
         <div class="promo-row"><input type="text" id="promo-inp" placeholder="Promo code"/><button onclick="applyPromo()">Apply</button></div>
         <p id="promo-msg"></p>
       </div>
@@ -897,12 +897,20 @@ function money(n){ return '₹' + Number(n||0).toLocaleString('en-IN'); }
 function updateSummaryDates(){
   const ci = document.getElementById('checkin').value;
   const co = document.getElementById('checkout').value;
-  if(ci) document.getElementById('sum-checkin').textContent = formatDate(ci);
-  if(co) document.getElementById('sum-checkout').textContent = formatDate(co);
+  document.getElementById('sum-checkin').textContent = ci ? formatDate(ci) : '—';
+  document.getElementById('sum-checkout').textContent = co ? formatDate(co) : '—';
   if(ci && co && new Date(co) > new Date(ci)){
     const nights = Math.round((new Date(co)-new Date(ci))/86400000);
     document.getElementById('sum-nights').textContent = nights + (nights===1?' Night':' Nights');
     refreshQuote();
+  } else {
+    // Dates incomplete or invalid — clear anything computed from a
+    // previous valid range so the summary never shows numbers that no
+    // longer correspond to the currently selected dates.
+    document.getElementById('sum-nights').textContent = '—';
+    document.getElementById('sum-tax').textContent = '—';
+    document.getElementById('sum-disc').textContent = '';
+    document.getElementById('sum-total').textContent = '—';
   }
 }
 
