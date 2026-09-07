@@ -53,7 +53,7 @@
   nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5vw;}
   .logo{font-family:'Fraunces',serif;font-size:1.2rem;letter-spacing:.02em;}
   .logo-wrap{display:flex;align-items:center;gap:.7rem;margin-left:-5vw;}
-  .logo-mark{height:38px;width:auto;display:block;}
+  .logo-mark{height:56px;width:auto;display:block;}
   .foot-logo{height:56px;width:auto;margin-bottom:1.2rem;}
   .logo em{font-style:italic;color:var(--clay);}
   .nav-links{display:flex;gap:2.2rem;list-style:none;}
@@ -349,7 +349,7 @@
   "description": "A small residential retreat in South Chennai offering Standard, Family, Premium and Pent House rooms plus a mini conference hall.",
   "url": "https://tranquility-inn.com/",
   "telephone": "+91-98840-32292",
-  "priceRange": "₹2,880 - ₹10,000",
+  "priceRange": "₹3,000 - ₹10,000",
   "image": "https://ak-d.tripcdn.com/images/0220e12000gawggeb0627_R_960_660_R5_D.jpg",
   "address": {
     "@type": "PostalAddress",
@@ -518,7 +518,7 @@
       <div class="room-body">
         <div class="room-name">Standard Room</div>
         <div class="room-size">460 sq.ft · Queen bed</div>
-        <div class="room-price"><span class="amt" data-price-slug="standard">₹2,880</span><span class="per">/ night</span></div>
+        <div class="room-price"><span class="amt" data-price-slug="standard">₹3,000</span><span class="per">/ night</span></div>
         <div class="room-tags"><span class="rtag">AC</span><span class="rtag">Smart TV</span><span class="rtag">Wi-Fi</span></div>
         <button class="room-btn" onclick="event.stopPropagation();selectRoomBySlug('standard')">Reserve</button>
       </div>
@@ -698,7 +698,7 @@
         <div class="srow"><span class="sl">Nights</span><span id="sum-nights">1 Night</span></div>
         <div class="srow"><span class="sl">Room rate</span><span id="sum-rate">₹5,000/night</span></div>
         <div class="srow"><span class="sl">Taxes (18% GST)</span><span id="sum-tax">₹630</span></div>
-        <div class="srow"><span class="sl">Promo discount</span><span id="sum-disc">— ₹0</span></div>
+        <div class="srow"><span class="sl">Promo discount</span><span id="sum-disc"></span></div>
         <div class="stotal"><span class="tl">Total</span><span class="tv" id="sum-total">₹4,130</span></div>
         <div class="promo-row"><input type="text" id="promo-inp" placeholder="Promo code"/><button onclick="applyPromo()">Apply</button></div>
         <p id="promo-msg"></p>
@@ -971,7 +971,7 @@ async function refreshQuote(){
     const base = selectedRoom.price * nights;
     const tax = Math.round(base*0.18);
     document.getElementById('sum-tax').textContent = money(tax);
-    document.getElementById('sum-disc').textContent = '— ₹0';
+    document.getElementById('sum-disc').textContent = '';
     document.getElementById('sum-total').textContent = money(base+tax);
     return;
   }
@@ -982,7 +982,7 @@ async function refreshQuote(){
     });
     document.getElementById('sum-rate').textContent = money(quote.roomRate) + '/night';
     document.getElementById('sum-tax').textContent = money(quote.taxAmount);
-    document.getElementById('sum-disc').textContent = quote.discountAmount>0 ? '— ' + money(quote.discountAmount) : '— ₹0';
+    document.getElementById('sum-disc').textContent = quote.discountAmount>0 ? '— ' + money(quote.discountAmount) : '';
     document.getElementById('sum-total').textContent = money(quote.totalAmount);
   }catch(err){
     document.getElementById('promo-msg').textContent = '✗ ' + err.message;
@@ -1022,7 +1022,8 @@ async function checkAvailability(){
   resultBox.classList.add('show');
 
   try{
-    const data = await api(`/api/availability?checkIn=${ci}&checkOut=${co}&guests=${encodeURIComponent(currentGuests())}`);
+    const roomType = document.getElementById('roomtype').value;
+    const data = await api(`/api/availability?checkIn=${ci}&checkOut=${co}&guests=${encodeURIComponent(currentGuests())}${roomType ? '&roomType=' + roomType : ''}`);
     listBox.innerHTML = data.rooms.map(r => r.available ? `
       <div class="avail-room">
         <div><div class="avail-room-name">${r.name}</div><div class="avail-room-sub">${data.nights} Night${data.nights!==1?'s':''} · ${r.unitsFree} left</div></div>

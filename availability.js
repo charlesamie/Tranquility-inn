@@ -11,7 +11,7 @@ const router = express.Router();
 // occupancy-tiered pricing (see pricing.js); defaults to double-occupancy rate.
 router.get('/', async (req, res) => {
   try {
-    const { checkIn, checkOut, guests } = req.query;
+    const { checkIn, checkOut, guests, roomType } = req.query;
     if (!checkIn || !checkOut) {
       return res.status(400).json({ error: 'checkIn and checkOut are required (YYYY-MM-DD).' });
     }
@@ -22,7 +22,9 @@ router.get('/', async (req, res) => {
     }
 
     const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
-    const rooms = await Room.find({ active: true });
+    const roomFilter = { active: true };
+    if (roomType) roomFilter.slug = roomType;
+    const rooms = await Room.find(roomFilter);
 
     const results = await Promise.all(rooms.map(async (room) => {
       // Overlap rule: an existing booking blocks a unit if it starts before our
