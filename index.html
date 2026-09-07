@@ -245,6 +245,9 @@
   .summary h3{font-family:'Fraunces',serif;font-size:1.25rem;color:var(--clay-soft);margin-bottom:1.4rem;}
   .srow{display:flex;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid rgba(247,245,240,.1);font-size:.85rem;}
   .srow .sl{color:rgba(247,245,240,.5);}
+  .sum-input{background:rgba(247,245,240,.06);border:1px solid rgba(247,245,240,.2);color:var(--paper);font-size:.82rem;padding:.4rem .6rem;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;}
+  .sum-input::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
+  select.sum-input option{background:var(--ink);color:var(--paper);}
   .stotal{display:flex;justify-content:space-between;align-items:center;padding-top:1.2rem;margin-top:.6rem;border-top:1px solid rgba(201,154,107,.3);}
   .stotal .tl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--clay-soft);}
   .stotal .tv{font-family:'Fraunces',serif;font-size:1.8rem;color:var(--paper);}
@@ -692,9 +695,16 @@
       <div class="summary">
         <h3>Booking summary</h3>
         <div class="srow"><span class="sl">Room</span><span id="sum-room">Family Room</span></div>
-        <div class="srow"><span class="sl">Check-in</span><span id="sum-checkin">—</span></div>
-        <div class="srow"><span class="sl">Check-out</span><span id="sum-checkout">—</span></div>
-        <div class="srow"><span class="sl">Guests</span><span id="sum-guests">2 Adults</span></div>
+        <div class="srow"><span class="sl">Check-in</span><input type="date" id="sum-checkin-input" class="sum-input"/></div>
+        <div class="srow"><span class="sl">Check-out</span><input type="date" id="sum-checkout-input" class="sum-input"/></div>
+        <div class="srow"><span class="sl">Guests</span>
+          <select id="sum-guests-input" class="sum-input">
+            <option>1 Adult</option>
+            <option selected>2 Adults</option>
+            <option>2 Adults, 1 Child</option>
+            <option>3 Adults</option>
+          </select>
+        </div>
         <div class="srow"><span class="sl">Nights</span><span id="sum-nights">—</span></div>
         <div class="srow"><span class="sl">Room rate</span><span id="sum-rate">₹5,000/night</span></div>
         <div class="srow"><span class="sl">Taxes (18% GST)</span><span id="sum-tax">—</span></div>
@@ -886,10 +896,31 @@ document.getElementById('checkin').value = fmt(tomorrow);
 document.getElementById('checkout').value = fmt(dayAfter);
 document.getElementById('checkin').min = fmt(today);
 document.getElementById('checkout').min = fmt(tomorrow);
+document.getElementById('sum-checkin-input').value = fmt(tomorrow);
+document.getElementById('sum-checkout-input').value = fmt(dayAfter);
+document.getElementById('sum-checkin-input').min = fmt(today);
+document.getElementById('sum-checkout-input').min = fmt(tomorrow);
 
 document.getElementById('checkin').addEventListener('change', updateSummaryDates);
 document.getElementById('checkout').addEventListener('change', updateSummaryDates);
-document.getElementById('guests').addEventListener('change', ()=>{ document.getElementById('sum-guests').textContent = document.getElementById('guests').value; refreshRoomPriceDisplays(); refreshQuote(); });
+document.getElementById('guests').addEventListener('change', ()=>{ document.getElementById('sum-guests-input').value = document.getElementById('guests').value; refreshRoomPriceDisplays(); refreshQuote(); });
+
+// Booking summary's own Check-in / Check-out / Guests controls — kept in
+// sync with the hero widget's fields in both directions, but the hero
+// fields remain the single source of truth everything else reads from.
+document.getElementById('sum-checkin-input').addEventListener('change', function(){
+  document.getElementById('checkin').value = this.value;
+  updateSummaryDates();
+});
+document.getElementById('sum-checkout-input').addEventListener('change', function(){
+  document.getElementById('checkout').value = this.value;
+  updateSummaryDates();
+});
+document.getElementById('sum-guests-input').addEventListener('change', function(){
+  document.getElementById('guests').value = this.value;
+  refreshRoomPriceDisplays();
+  refreshQuote();
+});
 
 function formatDate(d){ const o=new Date(d); return o.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
 function money(n){ return '₹' + Number(n||0).toLocaleString('en-IN'); }
@@ -897,8 +928,8 @@ function money(n){ return '₹' + Number(n||0).toLocaleString('en-IN'); }
 function updateSummaryDates(){
   const ci = document.getElementById('checkin').value;
   const co = document.getElementById('checkout').value;
-  document.getElementById('sum-checkin').textContent = ci ? formatDate(ci) : '—';
-  document.getElementById('sum-checkout').textContent = co ? formatDate(co) : '—';
+  document.getElementById('sum-checkin-input').value = ci;
+  document.getElementById('sum-checkout-input').value = co;
   if(ci && co && new Date(co) > new Date(ci)){
     const nights = Math.round((new Date(co)-new Date(ci))/86400000);
     document.getElementById('sum-nights').textContent = nights + (nights===1?' Night':' Nights');
@@ -1227,6 +1258,7 @@ async function loadReviews(){
 loadRooms();
 loadReviews();
 refreshPromoValidity();
+updateSummaryDates();
 
 async function refreshPromoValidity(){
   try{
