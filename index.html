@@ -1019,8 +1019,9 @@ async function processPayment(){
   const co = document.getElementById('checkout').value;
 
   if(!fname || !lname || !email || !phone){ alert('Please fill in your name, email and phone.'); return; }
+  if(!ci || !co){ alert('Please select your check-in and check-out dates.'); return; }
+  if(!(new Date(co) > new Date(ci))){ alert('Check-out date must be after check-in date.'); return; }
   if(!selectedRoom.id){ alert('Room data is still loading — please try again in a moment.'); return; }
-
   const payBtn = document.querySelector('.pay-btn');
   const originalLabel = payBtn.textContent;
   payBtn.textContent = 'Creating secure order…';
