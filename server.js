@@ -30,7 +30,13 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'script-src': ["'self'", "'unsafe-inline'", 'https://checkout.razorpay.com'],
+      'script-src': ["'self'", "'unsafe-inline'", 'https://checkout.razorpay.com', 'https://cdn.razorpay.com'],
+      // Helmet's defaults set script-src-attr to 'none', which is a SEPARATE
+      // directive from script-src — it specifically blocks inline onclick="..."
+      // attributes even when script-src itself allows 'unsafe-inline'. Every
+      // Reserve/Copy/Apply/Confirm & pay button on the site uses onclick, so
+      // without this override, all of them silently fail.
+      'script-src-attr': ["'self'", "'unsafe-inline'"],
       'frame-src': ["'self'", 'https://api.razorpay.com', 'https://www.google.com'],
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com'],
