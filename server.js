@@ -18,8 +18,6 @@ const reviewRoutes = require('./reviews');
 const googleReviewRoutes = require('./google-reviews');
 const bookingRoutes = require('./bookings');
 const paymentRoutes = require('./payment');
-const promoRoutes = require('./routes/promos');
-app.use('/api/promos', promoRoutes);
 const webhookRoutes = require('./webhook');
 
 const app = express();
