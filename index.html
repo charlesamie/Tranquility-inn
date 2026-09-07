@@ -580,7 +580,7 @@
       <div class="offer-pct">15% off</div>
       <div class="offer-title">Extended stay</div>
       <div class="offer-desc">Book three nights or more and save 15% on your total stay.</div>
-      <div class="offer-valid">Valid until 30 June 2026</div>
+      <div class="offer-valid" data-promo-valid="STAY3SAVE15">Valid until 30 June 2026</div>
       <div class="offer-code"><span>STAY3SAVE15</span><button class="copy-btn" onclick="copyCode('STAY3SAVE15',this)">Copy</button></div>
     </div>
     <div class="offer-card">
@@ -1022,6 +1022,7 @@ async function processPayment(){
   if(!ci || !co){ alert('Please select your check-in and check-out dates.'); return; }
   if(!(new Date(co) > new Date(ci))){ alert('Check-out date must be after check-in date.'); return; }
   if(!selectedRoom.id){ alert('Room data is still loading — please try again in a moment.'); return; }
+
   const payBtn = document.querySelector('.pay-btn');
   const originalLabel = payBtn.textContent;
   payBtn.textContent = 'Creating secure order…';
@@ -1163,6 +1164,21 @@ async function loadReviews(){
 
 loadRooms();
 loadReviews();
+refreshPromoValidity();
+
+async function refreshPromoValidity(){
+  try{
+    const promos = await api('/api/promos');
+    const stay3 = promos.find(p => p.code === 'STAY3SAVE15');
+    if(stay3 && stay3.validTo){
+      const formatted = new Date(stay3.validTo).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+      const el = document.querySelector('[data-promo-valid="STAY3SAVE15"]');
+      if(el) el.textContent = 'Valid until ' + formatted;
+    }
+  }catch(err){
+    console.warn('Could not refresh promo validity date.', err.message);
+  }
+}
 document.getElementById('confirmModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
 
 function copyCode(code, btn){
