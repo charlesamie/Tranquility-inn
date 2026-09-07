@@ -1,27 +1,64 @@
-// public/js/promos.js
-//
-// Refreshes the "Valid until ..." text on each promo card using live
-// data from /api/promos, so the displayed date always matches what's
-// in MongoDB.
-//
-// REQUIRES two small markup tweaks in your promo card HTML (see below).
+const express = require('express');
+const Promo = require('./Promo');
+const { requireAdmin } = require('./requireAdmin');
+const router = express.Router();
 
-document.addEventListener('DOMContentLoaded', async () => {
+// POST /api/promos/apply  { code, nights }  — public, validates a code
+router.post('/apply', async (req, res) => {
   try {
-    const res = await fetch('/api/promos');
-    if (!res.ok) return;
-    const promos = await res.json();
-
-    promos.forEach((promo) => {
-      const card = document.querySelector(`[data-promo-code="${promo.code}"]`);
-      if (!card) return;
-
-      const validEl = card.querySelector('[data-promo-valid]');
-      if (validEl) {
-        validEl.textContent = `Valid until ${promo.validToFormatted}`;
-      }
-    });
+    const { code, nights } = req.body;
+    if (!code) return res.status(400).json({ error: 'Promo code is required.' });
+    const promo = await Promo.findOne({ code: code.toUpperCase().trim(), active: true });
+    if (!promo) return res.status(404).json({ valid: false, error: 'Invalid promo code.' });
+    const now = new Date();
+    if (now < promo.validFrom || now > promo.validTo) {
+      return res.status(400).json({ valid: false, error: 'This promo code has expired.' });
+    }
+    if (nights && nights < promo.minNights) {
+      return res.status(400).json({ valid: false, error: `This code requires a minimum ${promo.minNights}-night stay.` });
+    }
+    res.json({ valid: true, code: promo.code, discountPct: promo.discountPct, label: promo.label });
   } catch (err) {
-    console.error('Could not refresh promo validity dates:', err);
+    res.status(500).json({ error: 'Could not validate promo code.', detail: err.message });
   }
 });
+
+// GET /api/promos/public — public, active promos only. Safe to expose since
+// these codes are already displayed in plain text on the homepage itself —
+// this just lets the page keep displayed details (like validity dates) in
+// sync with the DB without needing an admin token.
+router.get('/public', async (req, res) => {
+  try {
+    const promos = await Promo.find({ active: true }).select('code label discountPct minNights validTo');
+    res.json(promos);
+  } catch (err) {
+    res.status(500).json({ error: 'Could not load promos.' });
+  }
+});
+
+// --- Admin promo management ---
+
+// GET /api/promos — admin, list all
+router.get('/', requireAdmin, async (req, res) => {
+  const promos = await Promo.find().sort({ createdAt: -1 });
+  res.json(promos);
+});
+
+// POST /api/promos — admin, create
+router.post('/', requireAdmin, async (req, res) => {
+  try {
+    const promo = await Promo.create(req.body);
+    res.status(201).json(promo);
+  } catch (err) {
+    res.status(400).json({ error: 'Could not create promo.', detail: err.message });
+  }
+});
+
+// PATCH /api/promos/:id — admin, edit or deactivate
+router.patch('/:id', requireAdmin, async (req, res) => {
+  const promo = await Promo.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  if (!promo) return res.status(404).json({ error: 'Promo not found.' });
+  res.json(promo);
+});
+
+module.exports = router;

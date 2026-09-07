@@ -1168,7 +1168,7 @@ refreshPromoValidity();
 
 async function refreshPromoValidity(){
   try{
-    const promos = await api('/api/promos');
+    const promos = await api('/api/promos/public');
     const stay3 = promos.find(p => p.code === 'STAY3SAVE15');
     if(stay3 && stay3.validTo){
       const formatted = new Date(stay3.validTo).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
