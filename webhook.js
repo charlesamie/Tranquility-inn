@@ -30,7 +30,18 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
       .update(req.body)
       .digest('hex');
 
-    if (!signature || signature !== expected) {
+    // Timing-safe comparison — a plain !== comparison leaks how many
+    // leading characters matched via response-time differences, which a
+    // patient attacker could in theory exploit to forge a valid signature
+    // byte-by-byte. timingSafeEqual takes the same time regardless of
+    // where the mismatch is. It throws if the two buffers differ in
+    // length, so that's checked first rather than caught.
+    const signatureBuffer = Buffer.from(signature || '', 'utf8');
+    const expectedBuffer = Buffer.from(expected, 'utf8');
+    const isValid = signatureBuffer.length === expectedBuffer.length &&
+      crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
+
+    if (!isValid) {
       return res.status(400).json({ error: 'Invalid webhook signature.' });
     }
 

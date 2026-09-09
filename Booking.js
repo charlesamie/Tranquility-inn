@@ -44,6 +44,15 @@ const bookingSchema = new mongoose.Schema({
 
   razorpayOrderId: { type: String, index: true },
   razorpayPaymentId: { type: String },
+
+  // Populated by routes/bookings.js on cancellation, only when a refund
+  // was actually attempted through Razorpay. 'not_eligible' means the
+  // booking was paid but cancelled inside the 24-hour non-refundable
+  // window per policy — distinct from these fields simply being empty
+  // because the booking was never paid or never cancelled.
+  refundId: { type: String, default: null },
+  refundStatus: { type: String, enum: ['pending', 'processed', 'not_eligible', null], default: null },
+  refundAmount: { type: Number, default: 0 },
 }, { timestamps: true });
 
 // Speeds up the overlap check in routes/payment.js and routes/availability.js,
