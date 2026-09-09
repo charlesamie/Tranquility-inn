@@ -1,10 +1,11 @@
-// Sends booking confirmations by email (SendGrid) and SMS (Twilio), each
-// including links to the hotel's WhatsApp and Instagram.
+// Sends booking confirmations AND cancellation notices by email (SendGrid)
+// and SMS (Twilio), each including links to the hotel's WhatsApp and
+// Instagram.
 //
 // Both providers are optional: if their API keys aren't set in .env, the
 // matching send function logs a warning and resolves quietly instead of
-// throwing — so booking creation/payment never fails just because a
-// notification integration isn't configured yet.
+// throwing — so booking creation/payment/cancellation never fails just
+// because a notification integration isn't configured yet.
 
 function money(n) {
   return '₹' + Number(n || 0).toLocaleString('en-IN');
@@ -49,6 +50,37 @@ function buildEmailHtml(booking) {
   </div>`;
 }
 
+// Cancellation email content branches on the booking's actual refund
+// outcome (set by routes/bookings.js) rather than assuming a refund
+// happened — so the guest is never told money is coming back when it isn't.
+function buildCancellationEmailHtml(booking) {
+  const wa = whatsappLink(booking);
+  const ig = instagramLink();
+  let refundLine = '';
+  if (booking.refundStatus === 'processed' || booking.refundStatus === 'pending') {
+    refundLine = `<p>A refund of <strong>${money(booking.refundAmount)}</strong> has been initiated to your original payment method. It typically takes 5–7 business days to reflect.</p>`;
+  } else if (booking.refundStatus === 'not_eligible') {
+    refundLine = `<p>As this cancellation falls within 24 hours of check-in, it is non-refundable per our cancellation policy.</p>`;
+  }
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#141F1A;">
+    <h2 style="font-weight:400;">Booking cancelled — Tranquility Inn</h2>
+    <p>Hi ${booking.guestFirstName}, your booking has been cancelled as requested. Here are the details:</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin:16px 0;">
+      <tr><td style="padding:6px 0;color:#666;">Booking reference</td><td style="text-align:right;font-weight:600;">${booking.bookingRef}</td></tr>
+      <tr><td style="padding:6px 0;color:#666;">Room</td><td style="text-align:right;">${booking.roomName}</td></tr>
+      <tr><td style="padding:6px 0;color:#666;">Check-in</td><td style="text-align:right;">${formatDate(booking.checkIn)}</td></tr>
+      <tr><td style="padding:6px 0;color:#666;">Check-out</td><td style="text-align:right;">${formatDate(booking.checkOut)}</td></tr>
+    </table>
+    ${refundLine}
+    <p style="margin-top:24px;">
+      ${wa ? `<a href="${wa}" style="display:inline-block;background:#141F1A;color:#fff;text-decoration:none;padding:10px 18px;font-size:13px;margin-right:10px;">Message us on WhatsApp</a>` : ''}
+      ${ig ? `<a href="${ig}" style="display:inline-block;border:1px solid #141F1A;color:#141F1A;text-decoration:none;padding:10px 18px;font-size:13px;">Follow on Instagram</a>` : ''}
+    </p>
+    <p style="font-size:12px;color:#999;margin-top:28px;">Tranquility Inn, Manapakkam, Chennai · +91 98840 32292</p>
+  </div>`;
+}
+
 async function sendBookingConfirmationEmail(booking) {
   if (!process.env.SENDGRID_API_KEY) {
     console.warn(`[notify] SENDGRID_API_KEY not set — skipping confirmation email for ${booking.bookingRef}.`);
@@ -66,6 +98,27 @@ async function sendBookingConfirmationEmail(booking) {
     return { sent: true };
   } catch (err) {
     console.error(`[notify] Email send failed for ${booking.bookingRef}:`, err.message);
+    return { sent: false, reason: err.message };
+  }
+}
+
+async function sendCancellationEmail(booking) {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.warn(`[notify] SENDGRID_API_KEY not set — skipping cancellation email for ${booking.bookingRef}.`);
+    return { sent: false, reason: 'not_configured' };
+  }
+  try {
+    const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    await sgMail.send({
+      to: booking.guestEmail,
+      from: process.env.SENDGRID_FROM_EMAIL || 'reservations@tranquilityinn-chennai.com',
+      subject: `Booking cancelled — ${booking.bookingRef} · Tranquility Inn`,
+      html: buildCancellationEmailHtml(booking),
+    });
+    return { sent: true };
+  } catch (err) {
+    console.error(`[notify] Cancellation email send failed for ${booking.bookingRef}:`, err.message);
     return { sent: false, reason: err.message };
   }
 }
@@ -98,6 +151,40 @@ async function sendBookingConfirmationSMS(booking) {
   }
 }
 
+async function sendCancellationSMS(booking) {
+  if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+    console.warn(`[notify] Twilio credentials not set — skipping cancellation SMS for ${booking.bookingRef}.`);
+    return { sent: false, reason: 'not_configured' };
+  }
+  try {
+    const twilio = require('twilio');
+    const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    const wa = whatsappLink(booking);
+
+    let refundNote = '';
+    if (booking.refundStatus === 'processed' || booking.refundStatus === 'pending') {
+      refundNote = ` Refund of ${money(booking.refundAmount)} initiated, 5-7 business days.`;
+    } else if (booking.refundStatus === 'not_eligible') {
+      refundNote = ' Non-refundable per policy (within 24hrs of check-in).';
+    }
+
+    const body =
+      `Tranquility Inn: Booking ${booking.bookingRef} cancelled.` +
+      refundNote +
+      (wa ? ` Questions? WhatsApp us: ${wa}` : '');
+
+    await client.messages.create({
+      to: booking.guestPhone.startsWith('+') ? booking.guestPhone : `+91${booking.guestPhone.replace(/\D/g, '').slice(-10)}`,
+      from: process.env.TWILIO_FROM_NUMBER,
+      body,
+    });
+    return { sent: true };
+  } catch (err) {
+    console.error(`[notify] Cancellation SMS send failed for ${booking.bookingRef}:`, err.message);
+    return { sent: false, reason: err.message };
+  }
+}
+
 // Fire both, never let a notification failure affect the booking response.
 async function sendBookingConfirmations(booking) {
   const [email, sms] = await Promise.all([
@@ -107,4 +194,13 @@ async function sendBookingConfirmations(booking) {
   return { email, sms };
 }
 
-module.exports = { sendBookingConfirmations, whatsappLink, instagramLink };
+// Same fire-both, never-throw pattern, for cancellations.
+async function sendCancellationNotice(booking) {
+  const [email, sms] = await Promise.all([
+    sendCancellationEmail(booking).catch((e) => ({ sent: false, reason: e.message })),
+    sendCancellationSMS(booking).catch((e) => ({ sent: false, reason: e.message })),
+  ]);
+  return { email, sms };
+}
+
+module.exports = { sendBookingConfirmations, sendCancellationNotice, whatsappLink, instagramLink };

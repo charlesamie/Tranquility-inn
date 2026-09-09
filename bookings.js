@@ -3,6 +3,7 @@ const Razorpay = require('razorpay');
 const Booking = require('./Booking');
 const Room = require('./Room');
 const { requireAdmin } = require('./requireAdmin');
+const { sendCancellationNotice } = require('./notify');
 
 const router = express.Router();
 
@@ -65,6 +66,12 @@ router.patch('/:id/cancel', requireAdmin, async (req, res) => {
       booking.refundAmount = 0;
     }
     await booking.save();
+
+    // Don't make the admin wait on email/SMS providers — respond first,
+    // notify after. Same pattern as the confirmation flow in payment.js.
+    sendCancellationNotice(booking).then((result) => {
+      console.log(`[bookings] ${booking.bookingRef} cancellation notice — email: ${result.email.sent}, sms: ${result.sms.sent}`);
+    });
 
     res.json(booking);
   } catch (err) {
