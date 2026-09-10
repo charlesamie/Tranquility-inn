@@ -81,6 +81,19 @@ function buildCancellationEmailHtml(booking) {
   </div>`;
 }
 
+function buildPasswordResetEmailHtml(admin, resetUrl) {
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#141F1A;">
+    <h2 style="font-weight:400;">Password reset — Tranquility Inn Admin</h2>
+    <p>Hi ${admin.name}, we received a request to reset your admin password.</p>
+    <p style="margin:24px 0;">
+      <a href="${resetUrl}" style="display:inline-block;background:#141F1A;color:#fff;text-decoration:none;padding:12px 22px;font-size:14px;">Reset your password</a>
+    </p>
+    <p style="font-size:13px;color:#666;">This link expires in 30 minutes. If you didn't request this, you can safely ignore this email — your password won't change.</p>
+    <p style="font-size:12px;color:#999;margin-top:28px;">Tranquility Inn, Manapakkam, Chennai · +91 98840 32292</p>
+  </div>`;
+}
+
 async function sendBookingConfirmationEmail(booking) {
   if (!process.env.SENDGRID_API_KEY) {
     console.warn(`[notify] SENDGRID_API_KEY not set — skipping confirmation email for ${booking.bookingRef}.`);
@@ -119,6 +132,27 @@ async function sendCancellationEmail(booking) {
     return { sent: true };
   } catch (err) {
     console.error(`[notify] Cancellation email send failed for ${booking.bookingRef}:`, err.message);
+    return { sent: false, reason: err.message };
+  }
+}
+
+async function sendPasswordResetEmail(admin, resetUrl) {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.warn(`[notify] SENDGRID_API_KEY not set — skipping password reset email for ${admin.email}.`);
+    return { sent: false, reason: 'not_configured' };
+  }
+  try {
+    const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    await sgMail.send({
+      to: admin.email,
+      from: process.env.SENDGRID_FROM_EMAIL || 'reservations@tranquilityinn-chennai.com',
+      subject: 'Password reset — Tranquility Inn Admin',
+      html: buildPasswordResetEmailHtml(admin, resetUrl),
+    });
+    return { sent: true };
+  } catch (err) {
+    console.error(`[notify] Password reset email send failed for ${admin.email}:`, err.message);
     return { sent: false, reason: err.message };
   }
 }
@@ -203,4 +237,4 @@ async function sendCancellationNotice(booking) {
   return { email, sms };
 }
 
-module.exports = { sendBookingConfirmations, sendCancellationNotice, whatsappLink, instagramLink };
+module.exports = { sendBookingConfirmations, sendCancellationNotice, sendPasswordResetEmail, whatsappLink, instagramLink };

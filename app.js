@@ -68,6 +68,87 @@ $('#login-btn').addEventListener('click', async () => {
   }
 });
 
+// --- Forgot / reset password ---
+// Three states on this page: normal login, "request a reset link" form,
+// and (if the URL has ?token=&email=, i.e. the guest clicked the emailed
+// link) the "set a new password" form. Only one of these three is ever
+// shown at a time.
+function showView(view) {
+  $('#login-view').classList.add('hidden');
+  $('#forgot-view').classList.add('hidden');
+  $('#reset-view').classList.add('hidden');
+  view.classList.remove('hidden');
+}
+
+$('#forgot-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  $('#forgot-message').textContent = '';
+  $('#forgot-email').value = $('#login-email').value;
+  showView($('#forgot-view'));
+});
+
+$('#back-to-login-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  $('#login-error').textContent = '';
+  showView($('#login-view'));
+});
+
+$('#forgot-submit-btn').addEventListener('click', async () => {
+  const email = $('#forgot-email').value.trim();
+  const msgEl = $('#forgot-message');
+  msgEl.style.color = 'var(--ink-soft)';
+  if (!email) { msgEl.style.color = 'var(--bad)'; msgEl.textContent = 'Enter your email.'; return; }
+  try {
+    const data = await api('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    // Backend always returns this same generic message whether or not the
+    // account exists — intentional, don't treat it as a real confirmation
+    // that an email actually exists.
+    msgEl.textContent = data.message;
+  } catch (err) {
+    msgEl.style.color = 'var(--bad)';
+    msgEl.textContent = err.message;
+  }
+});
+
+$('#reset-submit-btn').addEventListener('click', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get('email');
+  const token = params.get('token');
+  const newPassword = $('#reset-new-password').value;
+  const confirmPassword = $('#reset-confirm-password').value;
+  const msgEl = $('#reset-message');
+  msgEl.style.color = 'var(--bad)';
+
+  if (newPassword.length < 8) { msgEl.textContent = 'Password must be at least 8 characters.'; return; }
+  if (newPassword !== confirmPassword) { msgEl.textContent = 'Passwords do not match.'; return; }
+
+  try {
+    const data = await api('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, token, newPassword }),
+    });
+    msgEl.style.color = 'var(--good)';
+    msgEl.textContent = data.message + ' Redirecting to sign in…';
+    setTimeout(() => {
+      window.location.href = window.location.pathname; // strips ?token=&email= from the URL
+    }, 2000);
+  } catch (err) {
+    msgEl.textContent = err.message;
+  }
+});
+
+// If the page loaded from an emailed reset link, go straight to the
+// "set new password" view instead of the normal login screen.
+(function initAuthView() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('token') && params.get('email')) {
+    showView($('#reset-view'));
+  }
+})();
+
 loadCaptcha();
 
 $('#logout-btn').addEventListener('click', () => {

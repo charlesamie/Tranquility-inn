@@ -14,7 +14,7 @@
   .hidden{display:none !important;}
 
   /* LOGIN */
-  #login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+  #login-view,#forgot-view,#reset-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
   .login-box{width:100%;max-width:380px;border:1px solid var(--line);background:var(--paper2);padding:2.4rem;}
   .login-mark{height:72px;width:auto;display:block;margin-bottom:1.4rem;}
   .login-box h1{font-size:1.5rem;margin-bottom:.3rem;}
@@ -89,6 +89,33 @@
     </div>
     <button class="btn" id="login-btn">Sign in</button>
     <p id="login-error"></p>
+    <p style="margin-top:1rem;text-align:center;"><a href="#" id="forgot-link" style="font-size:.8rem;color:var(--ink-soft);">Forgot password?</a></p>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD — request a reset link -->
+<div id="forgot-view" class="hidden">
+  <div class="login-box">
+    <img class="login-mark" src="logo-main.webp" alt="Tranquility Inn"/>
+    <h1>Reset password</h1>
+    <p>Enter your admin email and we'll send you a reset link.</p>
+    <div class="fgroup"><label>Email</label><input type="email" id="forgot-email" placeholder="admin@tranquilityinn-chennai.com"/></div>
+    <button class="btn" id="forgot-submit-btn">Send reset link</button>
+    <p id="forgot-message" style="font-size:.8rem;margin-top:1rem;min-height:1rem;"></p>
+    <p style="margin-top:1rem;text-align:center;"><a href="#" id="back-to-login-link" style="font-size:.8rem;color:var(--ink-soft);">Back to sign in</a></p>
+  </div>
+</div>
+
+<!-- RESET PASSWORD — reached from the emailed link (?token=&email=) -->
+<div id="reset-view" class="hidden">
+  <div class="login-box">
+    <img class="login-mark" src="logo-main.webp" alt="Tranquility Inn"/>
+    <h1>Set new password</h1>
+    <p>Choose a new password for your admin account.</p>
+    <div class="fgroup"><label>New password</label><input type="password" id="reset-new-password"/></div>
+    <div class="fgroup"><label>Confirm password</label><input type="password" id="reset-confirm-password"/></div>
+    <button class="btn" id="reset-submit-btn">Set new password</button>
+    <p id="reset-message" style="font-size:.8rem;margin-top:1rem;min-height:1rem;"></p>
   </div>
 </div>
 
