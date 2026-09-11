@@ -81,7 +81,7 @@
 
   /* HERO — full-bleed photo background, crossfade between slides */
   .hero{position:relative;min-height:88vh;padding:0 5vw;display:flex;align-items:flex-end;overflow:hidden;}
-  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.07);transition:opacity 1.6s ease,transform 8s ease-out;}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.06);transition:opacity 2.4s ease-in-out,transform 7s ease-out;}
   .hero-slide.active{opacity:1;transform:scale(1);}
   .hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,31,26,.72) 0%,rgba(20,31,26,.28) 55%,rgba(20,31,26,.12) 100%);}
   .hero-content{position:relative;max-width:640px;padding-bottom:4.5rem;}
@@ -104,10 +104,10 @@
   .hero-dots{position:absolute;z-index:2;bottom:2.2rem;right:5vw;display:flex;gap:.5rem;}
   .hero-dot{width:28px;height:2px;background:rgba(247,245,240,.3);overflow:hidden;position:relative;}
   .hero-dot .fill{position:absolute;inset:0;width:0%;background:var(--clay-soft);}
-  .hero-dot.active .fill{animation:heroFill 6s linear forwards;}
+  .hero-dot.active .fill{animation:heroFill 7s linear forwards;}
   @keyframes heroFill{from{width:0%;}to{width:100%;}}
   .hero-cap{position:absolute;z-index:2;bottom:3.6rem;right:5vw;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,245,240,.5);}
-  @media(prefers-reduced-motion:reduce){.hero-slide{transition:opacity 1.6s ease;transform:none !important;}}
+  @media(prefers-reduced-motion:reduce){.hero-slide{transition:opacity 2.4s ease-in-out;transform:none !important;}}
 
   /* LEDGER STRIP — signature element */
   .ledger{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper2);}
@@ -937,7 +937,7 @@ tickClock(); setInterval(tickClock, 15000);
     dots[current].classList.add('active');
     if(capEl) capEl.textContent = slides[current].dataset.cap || '';
   }
-  setInterval(() => goToSlide(current + 1), 6000);
+  setInterval(() => goToSlide(current + 1), 7000);
 })();
 
 // Lightbox
