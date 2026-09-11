@@ -61,6 +61,10 @@
   .nav-links a:hover{color:var(--ink);}
   .nav-cta{border:1px solid var(--ink);padding:.55rem 1.2rem;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;font-weight:500;transition:background .2s,color .2s;}
   .nav-cta:hover{background:var(--ink);color:var(--paper);}
+  .nav-actions{display:flex;align-items:center;gap:1.4rem;}
+  .nav-phone{display:flex;flex-direction:column;line-height:1.25;text-decoration:none;}
+  .nav-phone span{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);}
+  .nav-phone strong{font-family:'Fraunces',serif;font-size:.92rem;font-weight:500;color:var(--ink);}
 
   /* MOBILE MENU — hamburger toggle + dropdown, shown only under 900px */
   .menu-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;background:none;border:none;cursor:pointer;padding:0;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
@@ -75,18 +79,35 @@
   .mobile-nav a:hover{color:var(--ink);background:rgba(20,31,26,.03);}
   .mobile-nav-cta{color:var(--clay) !important;font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:.75rem !important;}
 
-  /* HERO */
-  .hero{padding:6.5rem 5vw 3rem;display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;align-items:end;}
-  .hero-title{font-size:clamp(2.7rem,5.4vw,4.6rem);line-height:1.02;font-weight:400;}
-  .hero-title em{font-style:italic;color:var(--clay);}
-  .hero-copy{font-size:1rem;color:var(--ink-soft);line-height:1.7;max-width:34ch;margin:1.6rem 0 2.2rem;font-weight:400;}
+  /* HERO — full-bleed photo background, crossfade between slides */
+  .hero{position:relative;min-height:88vh;padding:0 5vw;display:flex;align-items:flex-end;overflow:hidden;}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.07);transition:opacity 1.6s ease,transform 8s ease-out;}
+  .hero-slide.active{opacity:1;transform:scale(1);}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,31,26,.72) 0%,rgba(20,31,26,.28) 55%,rgba(20,31,26,.12) 100%);}
+  .hero-content{position:relative;max-width:640px;padding-bottom:4.5rem;}
+  .hero .eyebrow{color:rgba(247,245,240,.55);}
+  .hero-stars{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem;}
+  .hero-stars-icons{color:var(--clay-soft);font-size:1rem;letter-spacing:.1em;}
+  .hero-stars-count{font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:rgba(247,245,240,.55);}
+  .hero-title{font-size:clamp(2.7rem,5.4vw,4.6rem);line-height:1.02;font-weight:400;color:var(--paper);}
+  .hero-title em{font-style:italic;color:var(--clay-soft);}
+  .hero-tagline{font-family:'Fraunces',serif;font-style:italic;font-size:1.15rem;color:var(--clay-soft);margin-top:.7rem;}
+  .hero-copy{font-size:1rem;color:rgba(247,245,240,.72);line-height:1.7;max-width:34ch;margin:.9rem 0 2.2rem;font-weight:400;}
   .hero-btns{display:flex;gap:.9rem;flex-wrap:wrap;}
   .btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:.9rem 1.7rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .2s,color .2s;}
   .btn:hover{background:transparent;color:var(--ink);}
+  .hero .btn:hover{color:var(--paper);border-color:rgba(247,245,240,.5);}
   .btn-ghost{border:1px solid var(--line-strong);background:transparent;color:var(--ink);padding:.9rem 1.7rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:border-color .2s,color .2s;}
   .btn-ghost:hover{border-color:var(--ink);}
-  .hero-img{width:100%;height:420px;object-fit:cover;filter:grayscale(.06) contrast(1.03);}
-  .hero-img-cap{display:flex;justify-content:space-between;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:.7rem;}
+  .hero .btn-ghost{border-color:rgba(247,245,240,.35);color:var(--paper);}
+  .hero .btn-ghost:hover{border-color:var(--clay-soft);color:var(--clay-soft);}
+  .hero-dots{position:absolute;z-index:2;bottom:2.2rem;right:5vw;display:flex;gap:.5rem;}
+  .hero-dot{width:28px;height:2px;background:rgba(247,245,240,.3);overflow:hidden;position:relative;}
+  .hero-dot .fill{position:absolute;inset:0;width:0%;background:var(--clay-soft);}
+  .hero-dot.active .fill{animation:heroFill 6s linear forwards;}
+  @keyframes heroFill{from{width:0%;}to{width:100%;}}
+  .hero-cap{position:absolute;z-index:2;bottom:3.6rem;right:5vw;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,245,240,.5);}
+  @media(prefers-reduced-motion:reduce){.hero-slide{transition:opacity 1.6s ease;transform:none !important;}}
 
   /* LEDGER STRIP — signature element */
   .ledger{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper2);}
@@ -96,17 +117,30 @@
   .ledger-label{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.3rem;}
   .ledger-val{font-family:'Fraunces',serif;font-size:1.15rem;}
 
-  /* BOOKING BAR */
-  .booking-bar{background:var(--ink);color:var(--paper);}
+  /* BOOKING BAR — light floating card, pulled up to overlap the hero photo */
+  .booking-bar{position:relative;z-index:6;margin-top:-4.5rem;background:var(--paper2);color:var(--ink);border:1px solid var(--line);box-shadow:0 22px 44px rgba(20,31,26,.2);}
   .booking-inner{display:flex;flex-wrap:wrap;align-items:stretch;}
-  .bfield{flex:1;min-width:150px;padding:1.3rem 1.6rem;border-right:1px solid rgba(247,245,240,.14);}
+  .bfield{flex:1;min-width:150px;padding:1.3rem 1.6rem;border-right:1px solid var(--line);}
   .bfield:last-of-type{border-right:none;}
-  .bfield label{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,245,240,.5);margin-bottom:.45rem;}
-  .bfield input,.bfield select{background:transparent;border:none;color:var(--paper);font-size:.92rem;outline:none;width:100%;cursor:pointer;}
-  .bfield select option{background:var(--ink);color:var(--paper);}
-  .bfield input::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer;}
+  .bfield label{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.45rem;}
+  .bfield input,.bfield select{background:transparent;border:none;color:var(--ink);font-size:.92rem;outline:none;width:100%;cursor:pointer;}
+  .bfield select option{background:var(--paper);color:var(--ink);}
+  .bfield input::-webkit-calendar-picker-indicator{opacity:.55;cursor:pointer;}
   .book-btn{background:var(--clay);color:var(--paper);border:none;padding:0 2.2rem;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500;cursor:pointer;min-width:190px;transition:background .2s;}
   .book-btn:hover{background:var(--clay-soft);}
+
+  /* SECONDARY NAV — jump links + starting price + reserve CTA, sits below the booking card */
+  .subnav{border-bottom:1px solid var(--line);background:var(--paper2);}
+  .subnav-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1rem 5vw;}
+  .subnav-links{display:flex;gap:1.6rem;flex-wrap:wrap;}
+  .subnav-links a{font-size:.78rem;letter-spacing:.03em;text-decoration:none;color:var(--ink-soft);transition:color .2s;}
+  .subnav-links a:hover{color:var(--ink);}
+  .subnav-right{display:flex;align-items:center;gap:1.2rem;}
+  .subnav-from{font-size:.8rem;color:var(--ink-soft);}
+  .subnav-from strong{font-family:'Fraunces',serif;color:var(--ink);font-size:1rem;}
+  .subnav-cta{background:var(--ink);color:var(--paper);border:none;padding:.65rem 1.3rem;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .2s;}
+  .subnav-cta:hover{background:var(--clay);}
+  @media(max-width:640px){.subnav-links{display:none;}}
 
   .avail-result{display:none;background:var(--ink);color:var(--paper);padding:0 5vw 1.6rem;}
   .avail-result.show{display:block;}
@@ -328,7 +362,8 @@
 
   @media(max-width:1180px){ .rooms-grid{grid-template-columns:repeat(2,1fr);} }
   @media(max-width:900px){
-    .hero{grid-template-columns:1fr;gap:2rem;}
+    .hero{min-height:78vh;}
+    .hero-content{padding-bottom:3rem;max-width:100%;}
     .about{grid-template-columns:1fr;}
     .payment-grid,.location-grid{grid-template-columns:1fr;}
     .rooms-grid,.offers-grid,.reviews-grid{grid-template-columns:1fr;}
@@ -337,11 +372,14 @@
     .gallery-grid .g1{grid-column:1/3;grid-row:1;height:220px;}
     .foot-top{grid-template-columns:1fr 1fr;}
     .nav-links{display:none;}
+    .nav-phone{display:none;}
     .menu-toggle{display:flex;}
+    .booking-bar{margin-top:-2rem;}
     .booking-inner{flex-direction:column;}
-    .bfield{border-right:none;border-bottom:1px solid rgba(247,245,240,.14);}
+    .bfield{border-right:none;border-bottom:1px solid var(--line);}
     .form-row{grid-template-columns:1fr;}
     .ledger-item{min-width:50%;}
+    .subnav-inner{justify-content:space-between;}
   }
 </style>
 <script type="application/ld+json">
@@ -380,7 +418,10 @@
       <li><a href="#reviews">Reviews</a></li>
       <li><a href="#location">Location</a></li>
     </ul>
-    <a href="#payment" class="nav-cta">Book Now</a>
+    <div class="nav-actions">
+      <a class="nav-phone" href="tel:+919884032292"><span>Reservations</span><strong>+91 98840 32292</strong></a>
+      <a href="#payment" class="nav-cta">Book Now</a>
+    </div>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
       <span></span><span></span><span></span>
     </button>
@@ -393,40 +434,37 @@
     <a href="#offers">Offers</a>
     <a href="#reviews">Reviews</a>
     <a href="#location">Location</a>
+    <a href="tel:+919884032292">Call: +91 98840 32292</a>
     <a href="#payment" class="mobile-nav-cta">Book Now</a>
   </div>
 </header>
 
 <!-- HERO -->
 <section class="hero" id="home">
-  <div>
+  <div class="hero-slide active" style="background-image:url('hero-bg-1-lobby.jpg')" data-cap="Lobby"></div>
+  <div class="hero-slide" style="background-image:url('hero-bg-2-restobar.jpg')" data-cap="Resto Bar"></div>
+  <div class="hero-slide" style="background-image:url('hero-bg-3-orange-room.jpg')" data-cap="Premium Room"></div>
+  <div class="hero-slide" style="background-image:url('hero-bg-4-marble-room.jpg')" data-cap="Family Room"></div>
+  <div class="hero-slide" style="background-image:url('hero-bg-5-terrace.jpg')" data-cap="Rooftop Terrace"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
     <div class="eyebrow">Manapakkam, Chennai — Est. 2022</div>
-    <h1 class="hero-title">Quiet is<br/>the <em>amenity</em>.</h1>
+    <div class="hero-stars"><span class="hero-stars-icons">★★★★☆</span><span class="hero-stars-count" id="hero-stars-count">4.2 · 80+ reviews</span></div>
+    <h1 class="hero-title">Tranquility Inn <em>— Chennai</em></h1>
+    <p class="hero-tagline">Quiet is the amenity.</p>
     <p class="hero-copy">A small residential retreat in South Chennai. Clean rooms, unhurried mornings, and a front desk that remembers your name.</p>
     <div class="hero-btns">
       <button class="btn" onclick="document.getElementById('booking-bar').scrollIntoView({behavior:'smooth'})">Check availability</button>
       <button class="btn-ghost" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">View the property</button>
     </div>
   </div>
-  <div>
-    <img class="hero-img" src="https://ak-d.tripcdn.com/images/0220e12000gawggeb0627_R_960_660_R5_D.jpg" alt="Tranquility Inn, Chennai" onerror="this.src='https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=960&q=80'"/>
-    <div class="hero-img-cap"><span>Bedroom</span><span>Manapakkam</span></div>
-  </div>
+  <div class="hero-dots" id="hero-dots"></div>
+  <div class="hero-cap" id="hero-cap">Lobby</div>
 </section>
 
-<!-- LEDGER STRIP -->
-<div class="ledger">
-  <div class="wrap ledger-inner" style="padding:0;">
-    <div class="ledger-item"><div class="ledger-label">Chennai, now</div><div class="ledger-val" id="clock">—</div></div>
-    <div class="ledger-item"><div class="ledger-label">Rating</div><div class="ledger-val" id="hero-rating">4.2 · 80+ reviews</div></div>
-    <div class="ledger-item"><div class="ledger-label">Airport</div><div class="ledger-val">5 km</div></div>
-    <div class="ledger-item"><div class="ledger-label">Check-in / out</div><div class="ledger-val">1PM · 11AM</div></div>
-  </div>
-</div>
-
-<!-- BOOKING BAR -->
-<div class="booking-bar" id="booking-bar">
-  <div class="wrap booking-inner" style="padding:0;">
+<!-- BOOKING BAR — floating card overlapping the hero photo -->
+<div class="booking-bar wrap" id="booking-bar">
+  <div class="booking-inner">
     <div class="bfield"><label>Check-in</label><input type="date" id="checkin"/></div>
     <div class="bfield"><label>Check-out</label><input type="date" id="checkout"/></div>
     <div class="bfield"><label>Guests</label>
@@ -453,6 +491,34 @@
   <div class="wrap" style="padding:0;">
     <div class="avail-head">Available for your dates</div>
     <div class="avail-rooms" id="avail-rooms"></div>
+  </div>
+</div>
+
+<!-- SECONDARY NAV — quick jump links, starting price, reserve CTA -->
+<div class="subnav">
+  <div class="wrap subnav-inner" style="padding:0;">
+    <div class="subnav-links">
+      <a href="#about">About</a>
+      <a href="#rooms">Rooms</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#amenities">Amenities</a>
+      <a href="#location">Nearby</a>
+      <a href="#location">Location</a>
+    </div>
+    <div class="subnav-right">
+      <span class="subnav-from">From <strong>₹3,000</strong>/night</span>
+      <button class="subnav-cta" onclick="document.getElementById('payment').scrollIntoView({behavior:'smooth'})">Make a reservation</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEDGER STRIP -->
+<div class="ledger">
+  <div class="wrap ledger-inner" style="padding:0;">
+    <div class="ledger-item"><div class="ledger-label">Chennai, now</div><div class="ledger-val" id="clock">—</div></div>
+    <div class="ledger-item"><div class="ledger-label">Rating</div><div class="ledger-val" id="hero-rating">4.2 · 80+ reviews</div></div>
+    <div class="ledger-item"><div class="ledger-label">Airport</div><div class="ledger-val">5 km</div></div>
+    <div class="ledger-item"><div class="ledger-label">Check-in / out</div><div class="ledger-val">1PM · 11AM</div></div>
   </div>
 </div>
 
@@ -849,6 +915,31 @@ function tickClock(){
 }
 tickClock(); setInterval(tickClock, 15000);
 
+// Hero background slideshow — crossfades through property photos every 6s
+(function(){
+  const slides = document.querySelectorAll('#home .hero-slide');
+  const dotsWrap = document.getElementById('hero-dots');
+  const capEl = document.getElementById('hero-cap');
+  if(!slides.length || !dotsWrap) return;
+  let current = 0;
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'hero-dot' + (i === 0 ? ' active' : '');
+    d.innerHTML = '<div class="fill"></div>';
+    dotsWrap.appendChild(d);
+  });
+  const dots = document.querySelectorAll('.hero-dot');
+  function goToSlide(i){
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = i % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    if(capEl) capEl.textContent = slides[current].dataset.cap || '';
+  }
+  setInterval(() => goToSlide(current + 1), 6000);
+})();
+
 // Lightbox
 const photos = [
   { src:'https://ak-d.tripcdn.com/images/0220e12000gawggeb0627_R_960_660_R5_D.jpg', cap:'Bedroom' },
@@ -1196,6 +1287,8 @@ async function loadReviews(){
 
     const heroRating = document.getElementById('hero-rating');
     if(heroRating && data.rating) heroRating.textContent = data.rating + ' · ' + (data.userRatingsTotal || 0) + '+ reviews';
+    const heroStarsCount = document.getElementById('hero-stars-count');
+    if(heroStarsCount && data.rating) heroStarsCount.textContent = data.rating + ' · ' + (data.userRatingsTotal || 0) + '+ reviews';
     const aboutCount = document.getElementById('about-stat-count');
     const aboutScore = document.getElementById('about-stat-score');
     if(aboutCount && data.userRatingsTotal) aboutCount.textContent = data.userRatingsTotal + '+';
