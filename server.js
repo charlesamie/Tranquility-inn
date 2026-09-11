@@ -100,6 +100,12 @@ app.get('/gallery-lounge.jpg', (req, res) => res.sendFile(path.join(__dirname, '
 app.get('/gallery-bathroom.jpg', (req, res) => res.sendFile(path.join(__dirname, 'gallery-bathroom.jpg')));
 app.get('/lobby-1.jpg', (req, res) => res.sendFile(path.join(__dirname, 'lobby-1.jpg')));
 app.get('/lobby-2.jpg', (req, res) => res.sendFile(path.join(__dirname, 'lobby-2.jpg')));
+// Hero background crossfade photos (added for the new hero section)
+app.get('/hero-bg-1-lobby.jpg', (req, res) => res.sendFile(path.join(__dirname, 'hero-bg-1-lobby.jpg')));
+app.get('/hero-bg-2-restobar.jpg', (req, res) => res.sendFile(path.join(__dirname, 'hero-bg-2-restobar.jpg')));
+app.get('/hero-bg-3-orange-room.jpg', (req, res) => res.sendFile(path.join(__dirname, 'hero-bg-3-orange-room.jpg')));
+app.get('/hero-bg-4-marble-room.jpg', (req, res) => res.sendFile(path.join(__dirname, 'hero-bg-4-marble-room.jpg')));
+app.get('/hero-bg-5-terrace.jpg', (req, res) => res.sendFile(path.join(__dirname, 'hero-bg-5-terrace.jpg')));
 
 // 404 for unmatched API routes
 app.use('/api', (req, res) => res.status(404).json({ error: 'Not found.' }));
